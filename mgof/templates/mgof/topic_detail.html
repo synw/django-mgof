@@ -41,17 +41,32 @@
 						<a name="{{ post.pk }}"></a>
 						<div class="col-xs-12 col-sm-10 forum-post-text">
 							<div class="gp-up-l gp-down-l">
+								{% if comes_from_moderation and post.pk == post_to_moderate_pk %}
+									<div class="pull-right text-danger">
+										<i class="fa fa-server fa-lg"></i>&nbsp;{% trans 'Post to moderate' %}
+									</div>
+								{% endif %}
 								{{ post.content|safe }}
 							</div>
 							<a class="text-grey" href="{{ request.path }}#{{ post.pk }}">
 								<i class="fa fa-anchor"></i>
 							</a>
-							<a class="btn btn-default pull-right btn-sm hidden-xs gus" style="position:relative;bottom:1.5em" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
-								<i class="fa fa-pencil text-primary"></i>&nbsp;{%  trans 'Post a response' %}
-							</a>
-							<a class="btn btn-default text-center visible-xs btn-sm gus" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
-								<i class="fa fa-pencil text-primary"></i>&nbsp;{%  trans 'Post a response' %}
-							</a>
+							{% if comes_from_moderation and post.pk == post_to_moderate_pk %}
+								<div class="well" style="position:relative;bottom:1.5em">
+									<div class="pull-right">
+										<a class="btn btn-success">{% trans 'Accept post' %}</a>
+										<a class="btn btn-warning">{% trans 'Reject post' %}</a>
+									</div>
+									<h4>Moderation:</h4>
+								</div>
+							{% else %}
+								<a class="btn btn-default pull-right btn-sm hidden-xs gus" style="position:relative;bottom:1.5em" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
+									<i class="fa fa-pencil text-primary"></i>&nbsp;{%  trans 'Post a response' %}
+								</a>
+								<a class="btn btn-default text-center visible-xs btn-sm gus" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
+									<i class="fa fa-pencil text-primary"></i>&nbsp;{%  trans 'Post a response' %}
+								</a>
+							{% endif %}
 						</div>
 						<div class="col-xs-12 col-sm-2">
 							<div class="gp">

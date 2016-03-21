@@ -90,7 +90,7 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
         if posts:
             paginator = Paginator(posts, PAGINATE_BY)
             page_num = paginator.num_pages
-        return reverse('forum-topic-detail', kwargs={'topic_pk':self.topic.pk})+'?page='+str(page_num)+'&m=1'+'#'+str(self.pk)
+        return reverse('forum-topic-detail', kwargs={'topic_pk':self.topic.pk})+'?page='+str(page_num)+'&m=1&p='+str(self.pk)+'#'+str(self.pk)
         
 
 

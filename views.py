@@ -63,19 +63,11 @@ class TopicView(ListView):
         #~ record view if not comes from a pagination link
         if 'v' not in self.request.GET.keys():
             self.topic.num_views = self.topic.num_views+1
-        self.from_moderation = False
         self.topic.save()
         return qs
     
     def get_context_data(self, **kwargs):
-        is_moderator = user_is_moderator(self.request.user)
         context = super(TopicView, self).get_context_data(**kwargs)
-        #~ does it come from the moderation queue?
-        if 'm' in self.request.GET.keys() and is_moderator:
-            #~ get the moderated post number
-            if 'p' in self.request.GET.keys():
-                context['post_to_moderate_pk'] = int(self.request.GET['p']) 
-                context['comes_from_moderation'] = True
         context['forum'] = self.forum
         context['topic'] = self.topic
         return context
@@ -187,7 +179,7 @@ class ModerationQueueView(ListView):
         is_moderator = user_is_moderator(self.request.user)
         if not is_moderator:
             raise Http404
-        event_classes = ['Object created']
+        event_classes = ['Object created', 'Object deleted']
         model = Post
         qs = MEvent.objects.events_for_model(model, event_classes).select_related('user')
         return qs

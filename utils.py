@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import bleach
-from django.conf import settings
 from mgof.conf import MODERATION_GROUP
 
 
