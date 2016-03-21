@@ -1,6 +1,6 @@
 # Modern good old forums for Django
 
-An old-style forum app optimised for phone devices. Work in progress.
+An old school forum app optimised for phone devices. Work in progress.
 
 ### Dependencies 
 
