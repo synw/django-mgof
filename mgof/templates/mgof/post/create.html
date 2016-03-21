@@ -1,0 +1,29 @@
+{% extends "base.html" %}
+{% load staticfiles i18n bootstrap %}
+
+{% block extra_header %}
+	<link rel="stylesheet" href="{% static 'mgof/css/mgof.css' %}" />
+	{{ form.media }}
+{% endblock %}
+
+{% block title %}{% trans 'Post' %}{% endblock %}
+
+{% block content %}
+<div class="row">
+	<div class="col-xs-12 col-md-offset-1 col-md-10 col-md-offset-1 text-center">
+		<h1><i class="fa fa-commenting-o"></i>&nbsp;{% if not from_topic %}{% trans 'Post response' %}{% else %}{% trans 'Post topic' %}{% endif %}</h1>
+		<div>{% include "mgof/messages_display.html" %}</div>
+		<div>
+			<form action="" method="post">{% csrf_token %}
+				{{ form|bootstrap }}
+				<div id="submit_form" class="gus-l gds">
+					<input type="submit" class="btn btn-block btn-lg btn-primary" value="{% trans 'Save' %}" />
+				</div>	
+			</form>
+		</div>
+		{% if not from_topic %}
+			<a class="btn btn-default gus" href="javascript:history.back()"><i class="fa fa-arrow-left"></i>&nbsp;{% trans 'Back' %}</a>
+		{% endif %}
+	</div>
+</div>
+{% endblock %}

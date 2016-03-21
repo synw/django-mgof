@@ -1,0 +1,54 @@
+{% extends "base.html" %}
+{% load i18n staticfiles %}
+
+{% block title %}{% trans 'Forums' %}{% endblock %}
+
+{% block extra_header %}
+	<link rel="stylesheet" href="{% static 'mgof/css/mgof.css' %}" />
+{% endblock %}
+
+{% block content %}
+	{% if is_moderator %}
+		<a class="btn btn-{% if num_items_in_queue > 0 %}warning{% else %}default{% endif %} pull-right hidden-xxs" href="{% url 'forum-moderation-queue' %}" style="position:relative;top:2em;min-width:16em !important">
+			<i class="fa fa-server"></i>&nbsp;{% trans 'Moderation queue' %}
+			{% if num_items_in_queue > 0 %}<div class="badge">{{ num_items_in_queue }}</div>{% endif %}
+		</a>
+	{% endif %}
+	<h1 class="gds"><i class="fa fa-newspaper-o"></i>&nbsp;{% trans 'Forums' %}</h1>
+	{% if is_moderator %}
+		<div class="btn btn-{% if num_items_in_queue > 0 %}warning{% else %}default{% endif %} btn-block visible-xxs" href="{% url 'forum-moderation-queue' %}" style="position:relative;top:-1em">
+			<i class="fa fa-server"></i>&nbsp;{% trans 'Moderation queue' %}
+			{% if num_items_in_queue > 0 %}<div class="badge">{{ num_items_in_queue }}</div>{% endif %}
+		</div>
+	{% endif %}
+	<table class="table table-hover gus">
+		<thead>
+  			<tr class="active">
+  				<th style="width:70%">{% trans "Forum" %}</th>
+  				<th style="width:10%" class="text-center">{% trans "Topics" %}</th>
+  				<th style="width:10%" class="text-center">{% trans "Posts" %}</th>
+  				<th style="width:10%" class="text-center">{% trans "Last post" %}</th>
+  			</tr>
+		</thead>
+		<tbody>
+			{% for forum in forums %}
+				<tr>
+					<td style="width:70%">
+						<a href="{% url 'forum-detail' forum_pk=forum.pk %}">
+							<i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}
+						</a>
+					</td>
+					<td style="width:10%;vertical-align:middle" class="text-center">
+						{{ forum.num_topics }}
+					</td>
+					<td style="width:10%;vertical-align:middle" class="text-center">
+						{{ forum.num_posts }}
+					</td>
+					<td style="width:10%;vertical-align:middle" class="text-center">
+						<small>{{ forum.last_post_date }} {% trans 'by' %} <strong>{{ forum.last_post_username }}</strong></small>
+					</td>
+				</tr>
+			{% endfor %}
+		</tbody>
+	</table>
+{% endblock %}

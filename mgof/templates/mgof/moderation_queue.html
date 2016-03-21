@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% load i18n staticfiles %}
+
+{% block extra_header %}
+	<link rel="stylesheet" href="{% static 'mgof/css/mgof.css' %}" />
+{% endblock %}
+
+{% block title %}{% trans 'Moderation queue' %}{% endblock %}
+
+{% block content %}
+	<h1 class="gds"><i class="fa fa-server"></i>&nbsp;{% trans 'Moderation queue' %}
+	{% if events %} <span class="label label-warning gi">{{ events|length }}</span>{% endif %}</h1>
+	<ul class="list-group">
+		{% for event in events %}
+			<li class="list-group-item">
+				<div class="pull-right"><small>{{ event.user }} - {{ event.date_posted }}</small></div>
+				<i class="fa fa-comment-o"></i>&nbsp;<a href="{{ event.url }}">{{ event.name }}</a>
+			</li>
+		{% endfor %}
+	</ul>
+	<div class="gf text-center">
+		<a class="btn btn-default gus" href="javascript:history.back()"><i class="fa fa-arrow-left"></i>&nbsp;{% trans 'Back' %}</a>
+	</div>
+{% endblock %}

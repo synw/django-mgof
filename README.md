@@ -1,2 +1,2 @@
 # django-mgof
-Modern good old forum for Django
+Modern good old forums for Django

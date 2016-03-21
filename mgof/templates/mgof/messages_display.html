@@ -1,0 +1,10 @@
+{% if messages %}
+	{% for message in messages %}
+		{% if message %}
+		    <div class="alert alert-{{ message.level_tag }} {{ message.level_tag }} fade in text-center gbf">
+		    	<a href="#" class="close" data-dismiss="alert" aria-label="Fermer">&times;</a>
+		    	{% if message.extra_tags %}<i class="fa fa-{{ message.extra_tags }}"></i>&nbsp;{% endif %}{{ message|safe }}
+		    </div>
+		{% endif %}
+	{% endfor %}
+{% endif %}

@@ -1,0 +1,13 @@
+{% load i18n %}
+
+{% if not monitoring_level == '0' %}
+	{% url "forum-topic-set_monitoring" topic_pk=topic.pk monitoring_level=0 as murl %}
+	<a class="monitoring-icon-on" title="{% trans 'Turn monitoring off' %}" href="javascript:fire_request('monitoring_{{ topic.pk }}','{{ murl }}')">
+		<i class="fa fa-eye"></i>
+	</a>
+{% else %}
+	{% url "forum-topic-set_monitoring" topic_pk=topic.pk monitoring_level=1 as murl %}
+	<a class="monitoring-icon-off" title="{% trans 'Turn monitoring on' %}" href="javascript:fire_request('monitoring_{{ topic.pk }}','{{ murl }}')">
+		<i class="fa fa-eye-slash"></i>
+	</a>
+{% endif %}

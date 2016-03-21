@@ -1,0 +1,19 @@
+{% load i18n %}
+
+{% if is_paginated %}
+    <ul class="pagination" style="padding-top:0;margin-top:0;">
+        {% if page_obj.has_previous %}
+            <li>
+            	<a href="{% url 'forum-topic-detail' topic_pk=topic.pk %}?page={{ page_obj.previous_page_number }}&v=0"><i class="fa fa-arrow-left fa-lg"></i>&nbsp;</a>
+            </li>
+        {% endif %}
+            <li class="disabled">
+            	<a href="#">{% trans 'Page' %} {{ page_obj.number }} {% trans 'of' %} {{ page_obj.paginator.num_pages }}</a>
+            </li>
+        {% if page_obj.has_next %}
+            <li>
+            	<a href="{% url 'forum-topic-detail' topic_pk=topic.pk %}?page={{ page_obj.next_page_number }}&v=0">&nbsp;<i class="fa fa-arrow-right fa-lg"></i></a>
+            </li>
+        {% endif %}
+    </ul>
+{% endif %}
