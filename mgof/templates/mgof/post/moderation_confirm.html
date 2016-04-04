@@ -1,0 +1,29 @@
+{% load i18n %}
+
+function reject_post() {
+	var content = '<div class="visible-xs">' +
+	'<h4 class="gc gds text-danger">{{ question }}</h4>' +
+	'	<a class="btn btn-danger btn-block gds" href="javascript:fire_request(\'post_to_moderate_content\',\'/forum/moderate/{{ post.pk }}/0/\')">{% trans 'Yes I am sure' %}</a>' +
+	'	<a class="btn btn-success btn-block" href="javascript:take_me_back()">{% trans 'No: take me back' %}</a>' +
+	'</div>' +
+	'<div class="hidden-xs">' +
+	'	<a class="btn btn-danger pull-right gls" href="javascript:fire_request(\'post_to_moderate_content\',\'/forum/moderate/{{ post.pk }}/0/\')">{% trans 'Yes I am sure' %}</a>' +
+	'	<a class="btn btn-success pull-right" href="javascript:take_me_back()">{% trans 'No: take me back' %}</a>' +
+	'	<h4 class="gds text-danger">{{ question }}</h4>' +
+	'</div>';
+	$('#post_to_moderate_content').html(content);
+}
+		
+function take_me_back() {
+	var content = '<h4 class="gc visible-xxs gds">Moderation:</h4>' +
+	'<div class="visible-xxs">' +
+	'	<a class="btn btn-block btn-success gds" href="javascript:accept_post()">{% trans 'Accept post' %}</a>' +
+	'	<a class="btn btn-block btn-warning" href="javascript:reject_post()">{% trans 'Reject post' %}</a>' +
+	'</div>' +
+	'<div class="pull-right hidden-xxs">' +
+	'	<a class="btn btn-success" href="javascript:accept_post()">{% trans 'Accept post' %}</a>' +
+	'	<a class="btn btn-warning" href="javascript:reject_post()">{% trans 'Reject post' %}</a>' +
+	'</div>' +
+	'<h4 class="hidden-xxs">Moderation:</h4>';
+	$('#post_to_moderate_content').html(content);
+}

@@ -61,9 +61,10 @@ class PostAdmin(admin.ModelAdmin):
     form = PostForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'editor', 'edited', 'created' ]
-    list_display = ['topic', 'status', 'monitoring_level', 'edited']
+    list_display = ['topic', 'pk', 'posted_by', 'status', 'monitoring_level', 'edited']
     list_filter = ['status', 'topic__title']
-    search_fields = ['title', 'editor__username', 'topic__title']
+    search_fields = ['title', 'editor__username', 'posted_by__username', 'topic__title']
+    list_select_related = ['posted_by', 'topic']
     
     def save_model(self, request, obj, form, change):
         obj.editor = request.user

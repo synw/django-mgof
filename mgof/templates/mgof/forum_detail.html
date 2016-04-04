@@ -14,17 +14,32 @@
 {% block content %}
 	<div class="row">
 		<div class="col-xs-12">
+		
 			<div class="btn-group pull-right hidden-xxs" style="position:relative;top:2em;">
 				<a class="btn btn-primary" href="{% url 'forum-topic-create' forum_pk=forum.pk %}">
 					<i class="fa fa-pencil"></i>&nbsp;{% if not user.is_anonymous %}{%  trans 'Post topic' %}{% else %}{%  trans 'Login and post topic' %}{% endif %}
 				</a>
 				<a class="btn btn-default" href="{% url 'forums-index' %}">
 					<i class="fa fa-level-up"></i>&nbsp;{%  trans 'Forums' %}
-				</a>
+				</a>		
+				{% if is_moderator %}
+					<a class="btn btn-{% if num_items_in_queue > 0 %}warning{% else %}default{% endif %} hidden-xxs" href="{% url 'forum-moderation-queue' %}">
+						<i class="fa fa-server"></i>&nbsp;{% if num_items_in_queue > 0 %}<div class="badge">{{ num_items_in_queue }}</div>{% endif %}
+					</a>
+				{% endif %}
 			</div>
-			<a class="btn btn-default btn-block visible-xxs gds gus" href="{% url 'forums-index' %}">
-				<i class="fa fa-level-up"></i>&nbsp;{%  trans 'Forums' %}
-			</a>
+			<div class="gf text-center visible-xxs gds gus">
+				<div class="btn-group">
+					<a class="btn btn-default" href="{% url 'forums-index' %}">
+						<i class="fa fa-level-up"></i>&nbsp;{%  trans 'Forums' %}
+					</a>
+					{% if is_moderator %}
+						<a class="btn btn-{% if num_items_in_queue > 0 %}warning{% else %}default{% endif %}" href="{% url 'forum-moderation-queue' %}">
+							<i class="fa fa-server"></i>&nbsp;{% if num_items_in_queue > 0 %}<div class="badge">{{ num_items_in_queue }}</div>{% endif %}
+						</a>
+					{% endif %}
+				</div>
+			</div>
 			<div class="pull-right grs hidden-xs" style="position:relative;top:2em;">
 				{% include "mgof/forum/paginate.html" %}
 			</div>

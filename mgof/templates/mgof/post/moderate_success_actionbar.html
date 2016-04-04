@@ -1,0 +1,9 @@
+{% load i18n %}
+<h4 class="gc visible-xxs gds">{{ message }}</h4>
+<div class="visible-xxs">
+	<a class="btn btn-block btn-success" href="{% url 'forum-moderation-queue' %}">{% trans 'Back to moderation queue' %}</a>
+</div>
+<div class="pull-right hidden-xxs">
+	<a class="btn btn-success" href="{% url 'forum-moderation-queue' %}">{% trans 'Back to moderation queue' %}</a>
+</div>
+<h4 class="hidden-xxs">{{ message }}</h4>

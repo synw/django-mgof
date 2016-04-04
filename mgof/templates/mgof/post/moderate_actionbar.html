@@ -1,0 +1,11 @@
+{% load i18n %}
+<h4 class="gc visible-xxs gds">Moderation:</h4>
+<div class="visible-xxs">
+	<a class="btn btn-block btn-success gds" href="javascript:fire_request('post_to_moderate_content','/forum/moderate/{{ post.pk }}/1/')">{% trans 'Accept post' %}</a>
+	<a class="btn btn-block btn-warning" href="javascript:reject_post()">{% trans 'Reject post' %}</a>
+</div>
+<div class="pull-right hidden-xxs">
+	<a class="btn btn-success" href="javascript:fire_request('post_to_moderate_content','/forum/moderate/{{ post.pk }}/1/')">{% trans 'Accept post' %}</a>
+	<a class="btn btn-warning" href="javascript:reject_post()">{% trans 'Reject post' %}</a>
+</div>
+<h4 class="hidden-xxs">Moderation:</h4>

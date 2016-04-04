@@ -6,7 +6,7 @@ from django.db.models.signals import post_save, post_delete
 from django.dispatch import receiver
 from mqueue.models import MEvent
 from mqueue.conf import bcolors
-from mgof.models import Forum
+from mgof.models import Forum, Topic, Post
 
     
 def mmessage_save(sender, instance, created, **kwargs):
@@ -25,13 +25,18 @@ def mmessage_save(sender, instance, created, **kwargs):
                 event_class = classname+' edited'
         if create_event:
             #~ create event
-            admin_url = reverse('admin:%s_%s_change' %(instance._meta.app_label,  instance._meta.model_name),  args=[instance.id] )
+            #admin_url = reverse('admin:%s_%s_change' %(instance._meta.app_label,  instance._meta.model_name),  args=[instance.id] )
+            title = str(instance.pk)
+            try:
+                title = instance.title
+            except:
+                pass
             MEvent.objects.create(
                         model = instance.__class__, 
-                        name = classname+': '+instance.title, 
+                        name = classname+': '+title, 
                         obj_pk = instance.pk, 
                         user = instance.posted_by,
-                        admin_url = admin_url,
+                        #admin_url = admin_url,
                         event_class = event_class,
                         )
         if settings.DEBUG:
@@ -39,7 +44,8 @@ def mmessage_save(sender, instance, created, **kwargs):
     return    
 
 
-post_save.connect(mmessage_save, Forum)
+post_save.connect(mmessage_save, Topic)
+post_save.connect(mmessage_save, Post)
 
 
 

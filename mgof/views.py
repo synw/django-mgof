@@ -3,6 +3,7 @@
 from django.core.urlresolvers import reverse
 from django.core.paginator import Paginator
 from django.conf import settings
+from django.http import HttpResponse
 from django.http.response import Http404
 from django.views.generic import TemplateView
 from django.views.generic import ListView, CreateView
@@ -26,7 +27,7 @@ class ForumsView(TemplateView):
         forums = Forum.objects.filter(status=0).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
-            event_classes = ['Object created', 'Object deleted']
+            event_classes = ['Post created', 'Post deleted']
             model = Post
             context['num_items_in_queue'] = MEvent.objects.count_for_model(model, event_classes)
         context['forums'] = forums
@@ -114,12 +115,12 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     login_url = LOGIN_URL+'?from=/forum/'
     
     def get_context_data(self, **kwargs):
-            context = super(AddPostView, self).get_context_data(**kwargs)
-            from_topic = None
-            if 't' in self.request.GET.keys():
-                from_topic = 1
-            context['from_topic'] = from_topic
-            return context
+        context = super(AddPostView, self).get_context_data(**kwargs)
+        from_topic = None
+        if 't' in self.request.GET.keys():
+            from_topic = 1
+        context['from_topic'] = from_topic
+        return context
         
     def form_valid(self, form, **kwargs):
         is_moderator = user_is_moderator(self.request.user)
@@ -141,6 +142,7 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
             obj = form.save(commit=False)
             #~ handle meta info
             obj.editor = self.request.user
+            obj.posted_by = self.request.user
             obj.responded_to_pk = post_responded_to_pk
             obj.responded_to_username = post_responded_to_username
             obj.topic = topic
@@ -187,7 +189,7 @@ class ModerationQueueView(ListView):
         is_moderator = user_is_moderator(self.request.user)
         if not is_moderator:
             raise Http404
-        event_classes = ['Object created']
+        event_classes = ['Post created']
         model = Post
         qs = MEvent.objects.events_for_model(model, event_classes).select_related('user')
         return qs
@@ -217,5 +219,52 @@ def set_topic_monitoring_level(request, topic_pk, monitoring_level):
     else:
         if settings.DEBUG:
             print "Not ajax request for the 'set_topic_monitoring_level' view"
+        raise Http404
+    
+    
+@csrf_protect     
+def moderate_post(request, post_pk, action):
+    if request.is_ajax(): 
+        is_moderator = user_is_moderator(request.user)
+        if not is_moderator:
+            raise Http404
+            print 'NM'
+        #~ retrieve post
+        try:     
+            post = Post.objects.get(pk=post_pk) 
+        except Post.ObjectDoesNotExist:
+            if settings.DEBUG:
+                return HttpResponse('Post not found')
+            else:
+                return HttpResponse('')
+        #~ prepare action
+        msg = ''
+        predelete_post = post
+        del_event = False
+        if action == '0':
+            del_event = True
+            msg = _(u'Post rejected')
+        elif action == '1':
+            del_event = True
+            msg = _(u'Post validated')
+        #~ delete event
+        if del_event:
+            event = None
+            events  = MEvent.objects.events_for_object(predelete_post)
+            for event in events:
+                if event.event_class == "Post created":
+                    event = event
+                    break
+            if not event:
+                if settings.DEBUG:
+                    return HttpResponse('Event not found '+str(events))
+                else:
+                    return HttpResponse('')
+            event.delete()
+        #~ process action
+        if action == '0':
+            post.delete()
+        return render_to_response('mgof/post/moderate_success_actionbar.html', {'message':msg})
+    else:
         raise Http404
 
