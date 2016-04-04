@@ -11,26 +11,33 @@ from django.shortcuts import get_object_or_404, render_to_response
 from django.views.decorators.csrf import csrf_protect
 from django.utils import timezone
 from django.utils.translation import ugettext_lazy as _
-from braces.views import LoginRequiredMixin, MessageMixin
+from braces.views import LoginRequiredMixin, MessageMixin, GroupRequiredMixin
 from mqueue.models import MEvent
 from mgof.models import Forum, Topic, Post
 from mgof.forms import PostForm
-from mgof.utils import clean_post_data, user_is_moderator
-from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_GROUP, MODERATION_LEVEL, MODERATION_PAGINATE_BY
+from mgof.utils import clean_post_data, user_is_moderator, user_can_see_forum
+from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_GROUP, MODERATION_LEVEL, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
 
 
-class ForumsView(TemplateView):
+class ForumsView(TemplateView, GroupRequiredMixin):
     template_name = 'mgof/index.html'
 
     def get_context_data(self, **kwargs):
         context = super(ForumsView, self).get_context_data(**kwargs)
-        forums = Forum.objects.filter(status=0).prefetch_related('topics')
+        if ENABLE_PRIVATE_FORUMS:
+            all_forums = Forum.objects.filter(status=0).prefetch_related('topics', 'authorized_groups')
+            visible_forums = []
+            for forum in all_forums:
+                if user_can_see_forum(forum, self.request.user):
+                    visible_forums += [forum]
+        else:
+            visible_forums = all_forums = Forum.objects.filter(status=0).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
             event_classes = ['Post created', 'Post deleted']
             model = Post
             context['num_items_in_queue'] = MEvent.objects.count_for_model(model, event_classes)
-        context['forums'] = forums
+        context['forums'] = visible_forums
         context['is_moderator'] = is_moderator
         return context
     
@@ -40,8 +47,23 @@ class ForumView(ListView):
     paginate_by = PAGINATE_BY
     context_object_name = 'topics'
     
+    def dispatch(self, request, *args, **kwargs):
+        if ENABLE_PRIVATE_FORUMS:
+            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), status=0, pk=self.kwargs['forum_pk'])
+            user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
+            if not user_can_see_forum_:
+                MEvent.objects.create(
+                                      name='Forum unauthorized access: forum '+str(self.forum.pk), 
+                                      instance=self.forum, 
+                                      event_class="Warning",
+                                      user = request.user
+                                      )
+                raise Http404
+        else:
+            self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
+        return super(ForumView, self).dispatch(request, *args, **kwargs)
+    
     def get_queryset(self):
-        self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
         topics = Topic.objects.filter(status=0, forum=self.forum).order_by('-edited')
         return topics
     
@@ -52,14 +74,30 @@ class ForumView(ListView):
         return context
 
 
-class TopicView(ListView):
+class TopicView(ListView, GroupRequiredMixin):
     template_name = 'mgof/topic_detail.html'
     paginate_by = PAGINATE_BY
     context_object_name = 'posts'
     
+    def dispatch(self, request, *args, **kwargs):
+        if ENABLE_PRIVATE_FORUMS:
+            self.topic = get_object_or_404(Topic.objects.prefetch_related('forum__authorized_groups'), status=0, pk=self.kwargs['topic_pk'])
+            self.forum = self.topic.forum
+            user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
+            if not user_can_see_forum_:
+                MEvent.objects.create(
+                                      name='Forum unauthorized access: view topic', 
+                                      instance=self.topic, 
+                                      event_class="Warning",
+                                      user = request.user
+                                      )
+                raise Http404
+        else:
+            self.topic = get_object_or_404(Topic.objects.select_related('forum'), status=0, pk=self.kwargs['topic_pk'])
+            self.forum = self.topic.forum
+        return super(TopicView, self).dispatch(request, *args, **kwargs)
+    
     def get_queryset(self):
-        self.topic = get_object_or_404(Topic.objects.select_related('forum'), status=0, pk=self.kwargs['topic_pk'])
-        self.forum = self.topic.forum
         qs = Post.objects.filter(topic=self.topic, status=0).select_related('editor')
         #~ record view if not comes from a pagination link
         if 'v' not in self.request.GET.keys():
@@ -88,8 +126,23 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
     template_name = 'mgof/topic/create.html'
     login_url = LOGIN_URL+'?from=/forum/'
     
+    def dispatch(self, request, *args, **kwargs):
+        if ENABLE_PRIVATE_FORUMS:
+            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), status=0, pk=self.kwargs['forum_pk'])
+            user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
+            if not user_can_see_forum_:
+                MEvent.objects.create(
+                                      name='Forum unauthorized access: create topic', 
+                                      instance=self.forum, 
+                                      event_class="Warning",
+                                      user = request.user
+                                      )
+                raise Http404
+        else:
+            self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
+        return super(AddTopicView, self).dispatch(request, *args, **kwargs)
+    
     def form_valid(self, form, **kwargs):
-        self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
         if self.request.method == "POST":
             obj = form.save(commit=False)
             obj.title = form.cleaned_data['title']
@@ -114,6 +167,24 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     template_name = 'mgof/post/create.html'
     login_url = LOGIN_URL+'?from=/forum/'
     
+    def dispatch(self, request, *args, **kwargs):
+        if ENABLE_PRIVATE_FORUMS:
+            self.topic = get_object_or_404(Topic.objects.select_related('forum'), pk=self.kwargs['topic_pk'])
+            self.forum = self.topic.forum
+            user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
+            if not user_can_see_forum_:
+                MEvent.objects.create(
+                                      name='Forum unauthorized access: create post', 
+                                      instance=self.forum, 
+                                      event_class="Warning",
+                                      user = request.user
+                                      )
+                raise Http404
+        else:
+            self.topic = get_object_or_404(Topic.objects.select_related('forum'), pk=self.kwargs['topic_pk'])
+            self.forum = self.topic.forum
+        return super(AddPostView, self).dispatch(request, *args, **kwargs)
+    
     def get_context_data(self, **kwargs):
         context = super(AddPostView, self).get_context_data(**kwargs)
         from_topic = None
@@ -125,10 +196,8 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     def form_valid(self, form, **kwargs):
         is_moderator = user_is_moderator(self.request.user)
         if self.request.method == "POST":
-            topic_pk = self.kwargs['topic_pk']
+            topic = self.topic
             post_pk = self.kwargs['post_pk']
-            #~ get topic
-            self.topic = topic = get_object_or_404(Topic.objects.select_related('forum'), pk=topic_pk)
             #~ get posts for topic
             self.posts = Post.objects.filter(topic=self.topic, status=0)
             #~ get related post information

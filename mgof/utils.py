@@ -3,6 +3,7 @@
 import bleach
 from django.conf import settings
 from mgof.conf import MODERATION_GROUP
+from mqueue.models import MEvent
 
 
 def clean_post_data(html_str):
@@ -32,6 +33,18 @@ def user_is_moderator(user, superuser_too=True):
     return is_moderator
 
 
-
+def user_can_see_forum(forum, user, superuser_too=True):
+    user_groups = user.groups.all()
+    if forum.is_public:
+        return True
+    if superuser_too:
+        if user.is_superuser:
+            return True
+    else:
+        forum_groups = forum.authorized_groups.all()
+        for allowed_group in forum_groups:
+            if allowed_group in user_groups:
+                return True
+    return False
 
 
