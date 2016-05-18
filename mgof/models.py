@@ -14,7 +14,7 @@ class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel):
     num_posts = models.IntegerField(default=0, verbose_name=_(u'Posts in forum'))
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
-    is_public = models.BooleanField(default=True, verbose_name=_(u'Public'))
+    is_public = models.BooleanField(default=True, verbose_name=_(u'Opened to anonymous users'))
     authorized_groups = models.ManyToManyField(Group, blank=True, verbose_name=_(u'Reserved to groups')) 
     
     class Meta:

@@ -35,16 +35,24 @@ def user_is_moderator(user, superuser_too=True):
 
 def user_can_see_forum(forum, user, superuser_too=True):
     user_groups = user.groups.all()
-    if forum.is_public:
-        return True
     if superuser_too:
         if user.is_superuser:
             return True
-    else:
-        forum_groups = forum.authorized_groups.all()
+    forum_groups = forum.authorized_groups.all()
+    is_reserved_to_groups = False
+    if len(forum_groups) > 0:
+        is_reserved_to_groups = True
+    # group forums
+    if is_reserved_to_groups == True:
         for allowed_group in forum_groups:
             if allowed_group in user_groups:
                 return True
+    # private forums
+    if forum.is_public is False and user.is_authenticated() is True:
+        return True
+    # basic public forum
+    if forum.is_public is True and is_reserved_to_groups is False:
+        return True
     return False
 
 

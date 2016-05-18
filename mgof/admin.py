@@ -10,7 +10,7 @@ from mgof.models import Forum, Topic, Post
 class ForumForm(forms.ModelForm):
     class Meta:
         model = Forum
-        fields = ['title', 'status', 'is_public','authorized_groups']
+        fields = ['title', 'status', 'authorized_groups']
         widgets = {'status': forms.RadioSelect}
         
 
@@ -35,9 +35,10 @@ class ForumAdmin(admin.ModelAdmin):
     form = ForumForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'num_topics', 'num_posts', 'editor', 'edited', 'created' ]
-    list_display = ['title', 'num_topics', 'num_posts', 'is_public', 'status', 'edited']
+    list_display = ['title', 'num_topics', 'num_posts', 'status', 'edited']
     list_filter = ['status']
     search_fields = ['title', 'editor__username']
+    filter_horizontal = ('authorized_groups',)
     
     def save_model(self, request, obj, form, change):
         obj.editor = request.user
