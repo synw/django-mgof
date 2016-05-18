@@ -7,10 +7,9 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group 
 from ckeditor.fields import RichTextField
 from mbase.models import MetaBaseModel, MetaBaseContentModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel
-from mqueue.models import ObjectLevelMonitoredModel, MonitoredModel
 from mgof.conf import PAGINATE_BY
 
-class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel, MonitoredModel):
+class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel):
     num_topics = models.IntegerField(default=0, verbose_name=_(u'Topics in forum'))
     num_posts = models.IntegerField(default=0, verbose_name=_(u'Posts in forum'))
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
@@ -29,12 +28,14 @@ class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel, Monitor
         return reverse('forum-detail', kwargs={'forum_pk':self.pk})
 
 
-class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel, ObjectLevelMonitoredModel):
+class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel):
     forum = models.ForeignKey(Forum, related_name="topics", verbose_name = _(u'Forum'))
     num_posts = models.IntegerField(default=0, verbose_name=_(u'Number of posts'))
     num_views = models.IntegerField(default=0, verbose_name=_(u'Number of views'))
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
+    is_closed = models.BooleanField(default=False, verbose_name=_(u'Topic closed'))
+    is_moderated = models.BooleanField(default=True, verbose_name=_(u'Topic is moderated'))
     
     class Meta:
         verbose_name=_(u'Topic')
@@ -47,7 +48,7 @@ class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaB
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.pk})
         
 
-class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseStatusModel, ObjectLevelMonitoredModel):
+class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseStatusModel):
     topic = models.ForeignKey(Topic, related_name="posts", verbose_name = _(u'Topic'))
     responded_to_pk = models.PositiveIntegerField(default=0, blank=True) 
     responded_to_username = models.CharField(max_length=120, default='', blank=True)

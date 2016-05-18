@@ -1,0 +1,10 @@
+{% load i18n %}
+
+{% if topic.is_closed == True %}
+	<a href="javascript:fire_request('topic_{{ topic.pk }}', '{% url 'forum-topic-switch-open' topic_pk=topic.pk action=1 %}')">
+{% else %}
+	<a href="javascript:fire_request('topic_{{ topic.pk }}', '{% url 'forum-topic-switch-open' topic_pk=topic.pk action=0 %}')">
+{% endif %}
+<span id="topic_{{ topic.pk }}" class="grs">
+	<i class="fa fa-comment{% if topic.is_closed != True %}-o" title="{% trans 'Topic is open' %}" {% else %}" style="color:silver" title="{% trans 'Topic is closed' %}"{% endif %}></i>
+</span>

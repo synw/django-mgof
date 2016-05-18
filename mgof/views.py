@@ -34,7 +34,7 @@ class ForumsView(TemplateView, GroupRequiredMixin):
             visible_forums = all_forums = Forum.objects.filter(status=0).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
-            event_classes = ['Post created', 'Post deleted']
+            event_classes = ['Forum post']
             model = Post
             context['num_items_in_queue'] = MEvent.objects.count_for_model(model, event_classes)
         context['forums'] = visible_forums
@@ -56,7 +56,8 @@ class ForumView(ListView):
                                       name='Forum unauthorized access: forum '+str(self.forum.pk), 
                                       instance=self.forum, 
                                       event_class="Warning",
-                                      user = request.user
+                                      user = request.user,
+                                      request = request,
                                       )
                 raise Http404
         else:
@@ -89,7 +90,8 @@ class TopicView(ListView, GroupRequiredMixin):
                                       name='Forum unauthorized access: view topic', 
                                       instance=self.topic, 
                                       event_class="Warning",
-                                      user = request.user
+                                      user = request.user,
+                                      request = request,
                                       )
                 raise Http404
         else:
@@ -135,7 +137,8 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
                                       name='Forum unauthorized access: create topic', 
                                       instance=self.forum, 
                                       event_class="Warning",
-                                      user = request.user
+                                      user = request.user,
+                                      request = request,
                                       )
                 raise Http404
         else:
@@ -170,6 +173,8 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     def dispatch(self, request, *args, **kwargs):
         if ENABLE_PRIVATE_FORUMS:
             self.topic = get_object_or_404(Topic.objects.select_related('forum'), pk=self.kwargs['topic_pk'])
+            if self.topic.is_closed:
+                raise Http404
             self.forum = self.topic.forum
             user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
             if not user_can_see_forum_:
@@ -177,7 +182,8 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
                                       name='Forum unauthorized access: create post', 
                                       instance=self.forum, 
                                       event_class="Warning",
-                                      user = request.user
+                                      user = request.user,
+                                      request = request,
                                       )
                 raise Http404
         else:
@@ -196,6 +202,8 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     def form_valid(self, form, **kwargs):
         is_moderator = user_is_moderator(self.request.user)
         if self.request.method == "POST":
+            if self.topic.is_closed:
+                raise Http404
             topic = self.topic
             post_pk = self.kwargs['post_pk']
             #~ get posts for topic
@@ -216,11 +224,6 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
             obj.responded_to_username = post_responded_to_username
             obj.topic = topic
             obj.content = clean_post_data(obj.content)
-            #~ set monitoring level for post
-            if not is_moderator:
-                obj.monitoring_level = topic.monitoring_level
-            else:
-                obj.monitoring_level = 0
             obj.status = 0
             #~ counts for topic
             topic.num_posts = topic.num_posts+1
@@ -258,7 +261,7 @@ class ModerationQueueView(ListView):
         is_moderator = user_is_moderator(self.request.user)
         if not is_moderator:
             raise Http404
-        event_classes = ['Post created']
+        event_classes = ['Forum post']
         model = Post
         qs = MEvent.objects.events_for_model(model, event_classes).select_related('user')
         return qs
@@ -277,7 +280,10 @@ def set_topic_monitoring_level(request, topic_pk, monitoring_level):
             raise Http404     
         try:
             topic = Topic.objects.get(pk=topic_pk)
-            topic.monitoring_level = int(monitoring_level)
+            if monitoring_level == 0:
+                topic.is_moderated = False
+            if monitoring_level == 1:
+                topic.is_moderated = True
             topic.save()
         except:
             pass
@@ -297,7 +303,6 @@ def moderate_post(request, post_pk, action):
         is_moderator = user_is_moderator(request.user)
         if not is_moderator:
             raise Http404
-            print 'NM'
         #~ retrieve post
         try:     
             post = Post.objects.get(pk=post_pk) 
@@ -321,7 +326,7 @@ def moderate_post(request, post_pk, action):
             event = None
             events  = MEvent.objects.events_for_object(predelete_post)
             for event in events:
-                if event.event_class == "Post created":
+                if event.event_class == "Forum post":
                     event = event
                     break
             if not event:
@@ -336,4 +341,34 @@ def moderate_post(request, post_pk, action):
         return render_to_response('mgof/post/moderate_success_actionbar.html', {'message':msg})
     else:
         raise Http404
+    
+@csrf_protect     
+def switch_open_topic(request, topic_pk, action):
+    if request.is_ajax():
+        is_moderator = user_is_moderator(request.user)
+        if not is_moderator:
+            raise Http404
+        try:
+            topic=Topic.objects.get(pk=int(topic_pk))
+        except:
+            MEvent.objects.create(
+                                  name = "Can not retrieve post ('switch_open_post' view)",
+                                  event_class ="Warning",
+                                  request = request,
+                                  )
+            return
+        if int(action) == 0:
+            topic.is_closed = True
+        elif int(action) == 1:
+            topic.is_closed = False
+        topic.save()
+        return render_to_response('mgof/topic/switch_open.html',
+                                    {'topic': topic},
+                                    content_type="application/xhtml+xml"
+                                    )
+    else:
+        raise Http404
+
+
+
 

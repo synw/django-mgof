@@ -17,8 +17,10 @@ class ForumForm(forms.ModelForm):
 class TopicForm(forms.ModelForm):
     class Meta:
         model = Topic
-        fields = ['title', 'forum', 'status', 'monitoring_level', 'posted_by']
-        widgets = {'status': forms.RadioSelect, 'monitoring_level': forms.RadioSelect}
+        fields = ['title', 'forum', 'is_moderated', 'is_closed', 'status', 'posted_by']
+        widgets = {
+                   'status': forms.RadioSelect,
+                   }
        
         
 class PostForm(forms.ModelForm):
@@ -47,7 +49,7 @@ class TopicAdmin(admin.ModelAdmin):
     form = TopicForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'num_posts', 'num_views', 'editor', 'edited', 'created' ]
-    list_display = ['title', 'forum', 'num_posts', 'num_views', 'status', 'monitoring_level', 'edited']
+    list_display = ['title', 'forum', 'num_posts', 'num_views', 'status', 'is_moderated', 'is_closed', 'edited']
     list_filter = ['status']
     search_fields = ['title', 'editor__username']
     
@@ -61,7 +63,7 @@ class PostAdmin(admin.ModelAdmin):
     form = PostForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'editor', 'edited', 'created' ]
-    list_display = ['topic', 'pk', 'posted_by', 'status', 'monitoring_level', 'edited']
+    list_display = ['topic', 'pk', 'posted_by', 'status', 'edited']
     list_filter = ['status', 'topic__title']
     search_fields = ['title', 'editor__username', 'posted_by__username', 'topic__title']
     list_select_related = ['posted_by', 'topic']

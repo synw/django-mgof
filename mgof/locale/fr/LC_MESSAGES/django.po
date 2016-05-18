@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2016-04-04 17:04+0000\n"
+"POT-Creation-Date: 2016-05-18 15:42+0000\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,51 +18,63 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n > 1);\n"
 
-#: apps.py:6 models.py:23 templates/mgof/forum_detail.html:23
-#: templates/mgof/forum_detail.html:34 templates/mgof/forum_detail.html:111
-#: templates/mgof/forum_detail.html:125 templates/mgof/index.html:4
+#: apps.py:6 models.py:22 templates/mgof/forum_detail.html:23
+#: templates/mgof/forum_detail.html:34 templates/mgof/forum_detail.html:117
+#: templates/mgof/forum_detail.html:131 templates/mgof/index.html:4
 #: templates/mgof/index.html.py:17
 msgid "Forums"
 msgstr "Forums"
 
-#: models.py:14
+#: models.py:13
 msgid "Topics in forum"
 msgstr "Nombre de sujets"
 
-#: models.py:15
+#: models.py:14
 msgid "Posts in forum"
 msgstr "Nombre de posts"
 
-#: models.py:18
+#: models.py:17
 msgid "Public"
 msgstr "Public"
 
-#: models.py:19
+#: models.py:18
 msgid "Reserved to groups"
 msgstr "Réservé aux groupes"
 
-#: models.py:22 models.py:33 templates/mgof/forum_detail.html:4
+#: models.py:21 models.py:32 templates/mgof/forum_detail.html:4
 #: templates/mgof/index.html:27 templates/mgof/topic_detail.html:8
 msgid "Forum"
 msgstr "Forum"
 
-#: models.py:34
+#: models.py:33
 msgid "Number of posts"
 msgstr "Nombre de posts"
 
-#: models.py:35
+#: models.py:34
 msgid "Number of views"
 msgstr "Nombre de vues"
 
-#: models.py:40 models.py:51 templates/mgof/forum_detail.html:58
+#: models.py:37
+#, fuzzy
+#| msgid "Topics"
+msgid "Topic closed"
+msgstr "Sujets"
+
+#: models.py:38
+#, fuzzy
+#| msgid "Post to moderate"
+msgid "Topic is moderated"
+msgstr "Posts à modérer"
+
+#: models.py:41 models.py:52 templates/mgof/forum_detail.html:57
 msgid "Topic"
 msgstr "Sujet"
 
-#: models.py:41 templates/mgof/index.html:28
+#: models.py:42 templates/mgof/index.html:28
 msgid "Topics"
 msgstr "Sujets"
 
-#: models.py:56 models.py:57 models.py:60 templates/mgof/post/create.html:9
+#: models.py:57 models.py:58 models.py:61 templates/mgof/post/create.html:9
 msgid "Post"
 msgstr "Post"
 
@@ -74,44 +86,56 @@ msgstr "Page"
 msgid "of"
 msgstr "de"
 
-#: templates/mgof/forum_detail.html:20 templates/mgof/forum_detail.html:49
-#: templates/mgof/forum_detail.html:101 templates/mgof/forum_detail.html:108
-#: templates/mgof/forum_detail.html:122 templates/mgof/post/create.html:14
+#: templates/mgof/forum_detail.html:20 templates/mgof/forum_detail.html:48
+#: templates/mgof/forum_detail.html:107 templates/mgof/forum_detail.html:114
+#: templates/mgof/forum_detail.html:128 templates/mgof/post/create.html:14
 #: templates/mgof/topic/create.html:9 templates/mgof/topic/create.html.py:14
 msgid "Post topic"
 msgstr "Poster un sujet"
 
-#: templates/mgof/forum_detail.html:20 templates/mgof/forum_detail.html:49
+#: templates/mgof/forum_detail.html:20 templates/mgof/forum_detail.html:48
 msgid "Login and post topic"
 msgstr "Se connecter et poster un sujet"
 
-#: templates/mgof/forum_detail.html:59
+#: templates/mgof/forum_detail.html:58
 msgid "Views"
 msgstr "Vues"
 
-#: templates/mgof/forum_detail.html:60 templates/mgof/index.html:29
+#: templates/mgof/forum_detail.html:59 templates/mgof/index.html:29
 msgid "Posts"
 msgstr "Posts"
 
-#: templates/mgof/forum_detail.html:61 templates/mgof/index.html:30
+#: templates/mgof/forum_detail.html:60 templates/mgof/index.html:30
 msgid "Last post"
 msgstr "Dernier post"
 
-#: templates/mgof/forum_detail.html:72
+#: templates/mgof/forum_detail.html:71
 #: templates/mgof/topic/set_monitoring.html:10
 msgid "Turn monitoring on"
 msgstr "Monitorer"
 
-#: templates/mgof/forum_detail.html:79
+#: templates/mgof/forum_detail.html:78
 #: templates/mgof/topic/set_monitoring.html:5
 msgid "Turn monitoring off"
-msgstr "Ne pas monitorer"
+msgstr "Ne pas modérer"
 
-#: templates/mgof/forum_detail.html:90 templates/mgof/index.html:48
+#: templates/mgof/forum_detail.html:90 templates/mgof/topic/switch_open.html:9
+#, fuzzy
+#| msgid "Topics in forum"
+msgid "Topic is open"
+msgstr "Nombre de sujets"
+
+#: templates/mgof/forum_detail.html:90 templates/mgof/topic/switch_open.html:9
+#, fuzzy
+#| msgid "Topics in forum"
+msgid "Topic is closed"
+msgstr "Nombre de sujets"
+
+#: templates/mgof/forum_detail.html:96 templates/mgof/index.html:48
 msgid "by"
 msgstr "par"
 
-#: templates/mgof/forum_detail.html:98
+#: templates/mgof/forum_detail.html:104
 msgid "There is no topic in the forum yet"
 msgstr "Il n'y a pas encore de sujet dans le forum"
 
@@ -163,32 +187,36 @@ msgstr "Oui je suis sûr"
 msgid "No: take me back"
 msgstr "Non: retour"
 
-#: templates/mgof/topic_detail.html:15 templates/mgof/topic_detail.html:30
-#: templates/mgof/topic_detail.html:64 templates/mgof/topic_detail.html:67
-#: templates/mgof/topic_detail.html:83 templates/mgof/topic_detail.html:99
+#: templates/mgof/topic_detail.html:16 templates/mgof/topic_detail.html:32
+#: templates/mgof/topic_detail.html:68 templates/mgof/topic_detail.html:73
+#: templates/mgof/topic_detail.html:91 templates/mgof/topic_detail.html:113
 msgid "Post a response"
 msgstr "Poster une réponse"
 
-#: templates/mgof/topic_detail.html:45
+#: templates/mgof/topic_detail.html:48
 msgid "This post will be deleted. Are you sure?"
 msgstr "Ce post sera effacé. Etes vous sûr?"
 
-#: templates/mgof/topic_detail.html:50
+#: templates/mgof/topic_detail.html:53
 msgid "Post to moderate"
 msgstr "Posts à modérer"
 
-#: templates/mgof/topic_detail.html:73
+#: templates/mgof/topic_detail.html:80
 msgid "Posted by"
 msgstr "Posté par"
 
-#: views.py:237
+#: templates/mgof/topic_detail.html:102 templates/mgof/topic_detail.html:103
+msgid "This topic is closed"
+msgstr "Ce sujet est fermé"
+
+#: views.py:240
 msgid "Your post has been saved"
 msgstr "Votre post a été enregistré"
 
-#: views.py:315
+#: views.py:320
 msgid "Post rejected"
 msgstr "Post rejetté"
 
-#: views.py:318
+#: views.py:323
 msgid "Post validated"
 msgstr "Post validé"
