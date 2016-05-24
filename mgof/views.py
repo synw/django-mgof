@@ -16,7 +16,7 @@ from mqueue.models import MEvent
 from mgof.models import Forum, Topic, Post
 from mgof.forms import PostForm
 from mgof.utils import clean_post_data, user_is_moderator, user_can_see_forum
-from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_GROUP, MODERATION_LEVEL, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
+from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_LEVEL, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
 
 
 class ForumsView(TemplateView, GroupRequiredMixin):
@@ -272,10 +272,7 @@ def set_topic_monitoring_level(request, topic_pk, monitoring_level):
     if request.is_ajax(): 
         if request.user.is_anonymous():
             raise Http404
-        if request.user.is_superuser:
-            is_moderator = True
-        else:
-            is_moderator = request.user.groups.filter(name=MODERATION_GROUP).exists()
+        is_moderator = user_is_moderator(self.request.user)
         if not is_moderator:
             raise Http404     
         try:

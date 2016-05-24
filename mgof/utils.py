@@ -2,7 +2,7 @@
 
 import bleach
 from django.conf import settings
-from mgof.conf import MODERATION_GROUP
+from mgof.conf import MODERATION_GROUPS
 from mqueue.models import MEvent
 
 
@@ -29,7 +29,7 @@ def user_is_moderator(user, superuser_too=True):
             if user.is_superuser:
                 is_moderator = True
         else:
-            is_moderator = user.groups.filter(name=MODERATION_GROUP).exists()
+            is_moderator = user.groups.filter(name__in=MODERATION_GROUPS).exists()
     return is_moderator
 
 
