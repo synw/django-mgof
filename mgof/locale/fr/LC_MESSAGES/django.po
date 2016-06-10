@@ -33,15 +33,15 @@ msgstr "Public"
 
 #: conf.py:8
 msgid "Pending"
-msgstr ""
+msgstr "En attente"
 
 #: conf.py:9
 msgid "Unpublished"
-msgstr ""
+msgstr "Non pulié"
 
 #: conf.py:10
 msgid "Orphaned"
-msgstr ""
+msgstr "Orphelin"
 
 #: models.py:13
 msgid "Topics in forum"
@@ -95,7 +95,7 @@ msgstr "Sujets"
 #: models.py:57 models.py:58 models.py:62 models.py:64
 #: templates/mgof/post/create.html:9 tests/test_models.py:64
 msgid "Post"
-msgstr "Post"
+msgstr ""
 
 #: templates/mgof/forum/paginate.html:11 templates/mgof/topic/paginate.html:11
 msgid "Page"
@@ -122,7 +122,7 @@ msgstr "Vues"
 
 #: templates/mgof/forum_detail.html:58 templates/mgof/index.html:29
 msgid "Posts"
-msgstr "Posts"
+msgstr ""
 
 #: templates/mgof/forum_detail.html:59 templates/mgof/index.html:30
 msgid "Last post"
@@ -208,7 +208,7 @@ msgstr "Non: retour"
 
 #: templates/mgof/tags/forums_recent_entries.html:10
 msgid "By"
-msgstr ""
+msgstr "Par"
 
 #: templates/mgof/tags/forums_recent_entries.html:11
 msgid "Posted"
