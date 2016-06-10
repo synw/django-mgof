@@ -10,7 +10,7 @@
 {% block content %}
 	<div class="row">
 		<div class="col-xs-12">
-			<div class="btn-group pull-right hidden-xxs" style="position:relative;top:2em;padding-bottom:2em;">
+			<div class="btn-group pull-right hidden-xxs" style="position:relative;top:2em;">
 				{% if topic.is_closed != True %}
 					<a class="btn btn-primary" href="{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}">
 						<i class="fa fa-pencil"></i>&nbsp;{%  trans 'Post a response' %}
@@ -23,10 +23,10 @@
 			<a class="btn btn-default btn-block visible-xxs gds gus" href="{% url 'forum-detail' forum_pk=forum.pk %}">
 				<i class="fa fa-level-up"></i>&nbsp;{{ forum.title|truncatewords:3 }}
 			</a>
-			<div class="pull-right grs hidden-xs" style="position:relative;top:2em;">
+			<div class="pull-right grs hidden-xs" style="position:relative;top:1.9em;">
 				{% include "mgof/topic/paginate.html" %}
 			</div>
-			<h3 class="gds"><i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}</h3>
+			<h3 style="margin:1.2em 0 1.4em 0"><i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}</h3>
 			{% if topic.is_closed != True %}
 				<a class="btn btn-primary btn-block visible-xxs gds" href="{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}">
 					<i class="fa fa-pencil"></i>&nbsp;{%  trans 'Post a response' %}
@@ -64,7 +64,7 @@
 									<i class="fa fa-anchor"></i>
 								</a>
 								{% if topic.is_closed != True %}
-									<a class="btn btn-default pull-right btn-sm hidden-xs gus" style="position:relative;bottom:1.5em" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
+									<a class="btn btn-default pull-right btn-sm hidden-xs gus-md" style="position:relative;bottom:1.5em" href="{% if forloop.last %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}{% else %}{% url 'forum-post-create' forum_pk=forum.pk post_pk=post.pk topic_pk=topic.pk %}{% endif %}">
 										<i class="fa fa-pencil text-primary"></i>&nbsp;{%  trans 'Post a response' %}
 									</a>
 								{% endif %}
