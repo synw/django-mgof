@@ -3,11 +3,17 @@
 {% forums_last_posts %}
 <ul class="list-group">
 	{% for topic in topics %}
-		<li class="list-group-item">
-			<div class="gds">{{ topic.title }}</div>
+		<li class="list-group-item recent_entry">
+			<div class="gds">
+				<a href="{% url 'forum-topic-detail' topic.pk %}">
+					<i class="fa fa-comment-o"></i>&nbsp;{{ topic.title }}
+				</a>²
+			</div>
 			<div style="font-size:85%;">
 			{% trans 'By' %} <span style="font-weight:bold">{{ topic.last_post_username }}</span>
-			{% trans 'Posted' %} {{ topic.last_post_date|timesince }} {% trans 'ago' %}
+			{% if link.date %}
+				{% trans 'Posted' %} {{ topic.last_post_date|timesince }} {% trans 'ago' %}
+			{% endif %}
 			</div>
 			<div class="text-right">
 		    	<a class="btn btn-default btn-sm" href="{% url 'forum-topic-detail' topic.pk %}" title="">{% trans 'Read' %}</a>
