@@ -58,7 +58,10 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
         verbose_name_plural = _(u'Post')
 
     def __unicode__(self):
-        return unicode(_(u'Post')+' '+str(+self.pk) )+': '+self.content[:25]
+        try:
+            return unicode(_(u'Post')+' '+str(+self.pk) )+': '+self.content[:25]
+        except:
+            return unicode(_(u'Post'))
         
     def delete(self, *args, **kwargs):
         #~ get topic an forum

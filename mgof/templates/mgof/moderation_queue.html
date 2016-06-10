@@ -9,7 +9,7 @@
 
 {% block content %}
 	<h1 class="gds"><i class="fa fa-server"></i>&nbsp;{% trans 'Moderation queue' %}
-	{% if events %} <span class="label label-warning gi">{{ events|length }}</span>{% endif %}</h1>
+	{% if events %} <span class="label label-warning gi">{{ num_events }}</span>{% endif %}</h1>
 	<ul class="list-group">
 		{% for event in events %}
 			<li class="list-group-item">

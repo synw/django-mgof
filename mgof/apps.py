@@ -6,4 +6,4 @@ class MgofConfig(AppConfig):
     verbose_name = _(u"Forums")
     
     def ready(self):
-        from mgof import signals
+        pass

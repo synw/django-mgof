@@ -1,6 +1,6 @@
 function fire_request(container_id, url) { 
     var container = '#'+container_id;
-	$(container).html('<br /><br /><br /><i class="fa fa-spinner fa-spin"></i><br /><br /><br />');
+	$(container).html('<i class="gus pull-right fa fa-spinner fa-spin"></i>');
 	$.ajax({
 		type: "GET",
 		dataType: "html",

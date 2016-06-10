@@ -151,7 +151,8 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
             obj.title = form.cleaned_data['title']
             obj.forum = self.forum
             obj.monitoring_level = MODERATION_LEVEL
-            obj.status = 1
+            # set status to orphaned until a first post is related to the topic
+            obj.status = 3
         else: 
             raise Http404
         self.topic = obj
@@ -237,10 +238,22 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
             forum.last_post_date = timezone.now()
             forum.last_post_username = self.request.user.username
             forum.save()
+            self.post = obj
+            # moderation check
+            if topic.is_moderated and is_moderator is False:
+                obj.save()
+                MEvent.objects.create(
+                                model = Post, 
+                                name = 'Post from forum : '+obj.topic.title,
+                                instance = obj,
+                                user = obj.posted_by,
+                                event_class = 'Forum post',
+                                request = self.request,
+                                notes = obj.content
+                                )
             self.messages.success(_(u'Your post has been saved'), extra_tags='save text-info fa-2x')
         else: 
             raise Http404
-        self.post = obj
         return super(AddPostView, self).form_valid(form)
 
     def get_success_url(self):
@@ -264,7 +277,14 @@ class ModerationQueueView(ListView):
         event_classes = ['Forum post']
         model = Post
         qs = MEvent.objects.events_for_model(model, event_classes).select_related('user')
+        self.num_events = qs.count()
         return qs
+
+    def get_context_data(self, **kwargs):
+        context = super(ModerationQueueView, self).get_context_data(**kwargs)
+        context['num_events'] = self.num_events
+        return context
+    
     
 
 @csrf_protect     
@@ -272,7 +292,7 @@ def set_topic_monitoring_level(request, topic_pk, monitoring_level):
     if request.is_ajax(): 
         if request.user.is_anonymous():
             raise Http404
-        is_moderator = user_is_moderator(self.request.user)
+        is_moderator = user_is_moderator(request.user)
         if not is_moderator:
             raise Http404     
         try:

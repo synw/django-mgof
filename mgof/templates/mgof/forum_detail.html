@@ -2,16 +2,15 @@
 {% load staticfiles i18n %}
 
 {% block title %}{% trans 'Forum' %} {{ forum.title }}{% endblock %}
-{% block extra_header %}
-<link rel="stylesheet" href="{% static 'mgof/css/mgof.css' %}" />
-<script type="text/javascript">
-	$.ajaxSetup({
-  		data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
-	});
-</script>
-{% endblock %}
 
 {% block content %}
+	<link rel="stylesheet" href="{% static 'mgof/css/mgof.css' %}" />
+	<script type="text/javascript">
+		$.ajaxSetup({
+	  		data: {csrfmiddlewaretoken: '{{ csrf_token }}' },
+		});
+	</script>
+	<script type="text/javascript" src="{% static 'mgof/js/utils.js' %}"></script>
 	<div class="row">
 		<div class="col-xs-12">
 		

@@ -10,7 +10,7 @@
 {% block content %}
 	<div class="row">
 		<div class="col-xs-12">
-			<div class="btn-group pull-right hidden-xxs" style="position:relative;top:2em;">
+			<div class="btn-group pull-right hidden-xxs" style="position:relative;top:2em;padding-bottom:2em;">
 				{% if topic.is_closed != True %}
 					<a class="btn btn-primary" href="{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}">
 						<i class="fa fa-pencil"></i>&nbsp;{%  trans 'Post a response' %}
@@ -26,7 +26,7 @@
 			<div class="pull-right grs hidden-xs" style="position:relative;top:2em;">
 				{% include "mgof/topic/paginate.html" %}
 			</div>
-			<h1 class="gds"><i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}</h1>
+			<h3 class="gds"><i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}</h3>
 			{% if topic.is_closed != True %}
 				<a class="btn btn-primary btn-block visible-xxs gds" href="{% url 'forum-post-create' forum_pk=forum.pk post_pk=0 topic_pk=topic.pk %}">
 					<i class="fa fa-pencil"></i>&nbsp;{%  trans 'Post a response' %}
@@ -36,7 +36,7 @@
 				{% include "mgof/topic/paginate.html" %}
 			</div>
 			<div class="panel panel-primary">
-				<div class="panel-heading">
+				<div class="panel-heading" style="font-size:120%">
 					<i class="fa fa-comment-o"></i>&nbsp;{{ topic.title }}</h2>
 				</div>
 				{% for post in posts %}
