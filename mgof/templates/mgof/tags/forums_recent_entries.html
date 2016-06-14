@@ -7,17 +7,18 @@
 			<div class="gds">
 				<a href="{% url 'forum-topic-detail' topic.pk %}">
 					<i class="fa fa-comment-o"></i>&nbsp;{{ topic.title }}
-				</a>²
+				</a>
+				<span style="font-size:85%;">(&nbsp;{{ topic.num_views }} {% trans 'views' %}&nbsp;)</span>
 			</div>
-			<div style="font-size:85%;">
+			<div class="pull-right">
+		    	<a class="btn btn-default btn-sm" href="{% url 'forum-topic-detail' topic.pk %}" title="">{% trans 'Read' %}</a>
+		    </div>
+			<div class="gds" style="font-size:85%;">
 			{% trans 'By' %} <span style="font-weight:bold">{{ topic.last_post_username }}</span>
 			{% if link.date %}
 				{% trans 'Posted' %} {{ topic.last_post_date|timesince }} {% trans 'ago' %}
 			{% endif %}
 			</div>
-			<div class="text-right">
-		    	<a class="btn btn-default btn-sm" href="{% url 'forum-topic-detail' topic.pk %}" title="">{% trans 'Read' %}</a>
-		    </div>
 		</li>
 	{% endfor %}
 </ul>
