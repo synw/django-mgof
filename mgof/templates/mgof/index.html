@@ -39,13 +39,16 @@
 						</a>
 					</td>
 					<td style="width:10%;vertical-align:middle" class="text-center">
-						{{ forum.num_topics }}
+						{% if forum.num_topics > 0 %}}{{ forum.num_topics }}{% else %}0{% endif %}
 					</td>
 					<td style="width:10%;vertical-align:middle" class="text-center">
-						{{ forum.num_posts }}
+						{% if forum.num_posts > 0 %}}{{ forum.num_posts }}{% else %}0{% endif %}
 					</td>
 					<td style="width:10%;vertical-align:middle" class="text-center">
-						<small>{{ forum.last_post_date }} {% trans 'by' %} <strong>{{ forum.last_post_username }}</strong></small>
+						<small>
+							{% if forum.last_post_date %}{{ forum.last_post_date }}{% endif %} 
+							{% if forum.last_post_username %}{% trans 'by' %} <strong>{{ forum.last_post_username }}</strong>{% endif %}
+						</small>
 					</td>
 				</tr>
 			{% endfor %}

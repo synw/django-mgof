@@ -8,6 +8,7 @@ from django.contrib.auth.models import Group
 from ckeditor.fields import RichTextField
 from mbase.models import MetaBaseModel, MetaBaseContentModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel
 from mgof.conf import PAGINATE_BY
+from mqueue.models import MEvent
 
 class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel):
     num_topics = models.IntegerField(default=0, verbose_name=_(u'Topics in forum'))
@@ -84,6 +85,12 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
             topic.save()
             forum.num_posts = forum.num_posts+1
             forum.save()
+        # clean moderation queue
+        try:
+            event = MEvent.objects.get(model=Post, event_class='forum_post')
+            event.delete()
+        except:
+            pass
         super(Post, self).delete(*args, **kwargs)
     
     def get_absolute_url(self):
