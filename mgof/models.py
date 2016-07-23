@@ -75,16 +75,16 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
         else:
             forum = self.topic.forum
         #~ check if topic has posts or delete it
-        posts = topic.posts
-        if not posts:
+        posts = topic.posts.all()
+        if len(posts) == 1:
             topic.delete()
         else:
             #~ update topic an forum info
-            topic.num_posts = topic.num_posts+1
+            topic.num_posts = topic.num_posts-1
             # TODO: update for last post info
             topic.save()
-            forum.num_posts = forum.num_posts+1
-            forum.save()
+        forum.num_posts = forum.num_posts-1
+        forum.save()
         # clean moderation queue
         try:
             event = MEvent.objects.get(model=Post, event_class='forum_post')

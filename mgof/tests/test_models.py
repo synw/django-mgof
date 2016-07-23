@@ -3,28 +3,11 @@
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 from django.utils.translation import ugettext_lazy as _
+from django.contrib.contenttypes.models import ContentType
 from autofixture import AutoFixture
+from mqueue.models import MEvent
 from mgof.models import Forum, Topic, Post
-
-# ------------- objects factory ---------------
-def create_forum():
-    obj = Forum.objects.create(title='The forum')
-    return obj
-    
-def create_topic(forum=None, pk=None):
-    if forum is None:
-        forum = create_forum()
-    if pk is None:
-        obj = Topic.objects.create(title='The topic', forum=forum)
-    else:
-        obj = Topic.objects.create(pk=pk, title='The topic', forum=forum)
-    return obj
-
-def create_post(topic=None):
-    if topic is None:
-        topic = create_topic()
-    obj = Post.objects.create(topic=topic, content="Lorem ipsum")
-    return obj
+from mgof.tests.factory import create_forum, create_topic, create_post
 
 # ------------- tests ---------------
 class ForumTest(TestCase):
@@ -60,14 +43,18 @@ class TopicTest(TestCase):
 class PostTest(TestCase):
     
     def test_obj_creation(self):
-        obj = create_post()
-        str_output = unicode(_(u'Post')+' '+str(+obj.pk) )+': '+obj.content[:25]
+        topic = create_topic()
+        obj = create_post(topic)
+        str_output = unicode(_(u'Post')+' '+str(obj.pk) )+': '+obj.content[:25]
         self.assertTrue(isinstance(obj, Post))
         self.assertEqual(obj.__unicode__(), str_output)
         self.assertEqual(obj.responded_to_pk, 0)
         self.assertEqual(obj.responded_to_username, '')
         self.assertEqual(obj.get_absolute_url(), reverse('forum-topic-detail', kwargs={'topic_pk':obj.topic.pk})+'?page=1#'+str(obj.pk))
         self.assertEqual(obj.get_event_object_url(), reverse('forum-topic-detail', kwargs={'topic_pk':obj.topic.pk})+'?page=1&m=1&p='+str(obj.pk)+'#'+str(obj.pk))
+        self.assertTrue(topic.is_moderated)
+        self.assertFalse(topic.is_closed)
+        self.assertEqual(topic.num_views, 0)
         return
     
     def test_obj_deletion(self):
@@ -76,6 +63,7 @@ class PostTest(TestCase):
         post1 = create_post(topic=topic)
         post2 = create_post(topic=topic)
         post3 = create_post(topic=topic)
+        # fake these (handled in the create view)
         topic.num_posts = 3
         forum.num_posts = 3
         topic.save()
@@ -88,7 +76,9 @@ class PostTest(TestCase):
         post2.delete()
         post1.delete()
         self.assertFalse(Topic.objects.filter(pk=10).exists())
+        self.assertEqual(len(forum.topics.all()), 0)
         self.assertEqual(forum.num_posts, 0)
+        
         return
 
 
