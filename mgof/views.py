@@ -24,14 +24,14 @@ class ForumsView(TemplateView, GroupRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ForumsView, self).get_context_data(**kwargs)
-        if ENABLE_PRIVATE_FORUMS:
+        if ENABLE_PRIVATE_FORUMS is True:
             all_forums = Forum.objects.filter(status=0).prefetch_related('topics', 'authorized_groups')
             visible_forums = []
             for forum in all_forums:
-                if user_can_see_forum(forum, self.request.user):
+                if user_can_see_forum(forum, self.request.user) is True:
                     visible_forums += [forum]
         else:
-            visible_forums = all_forums = Forum.objects.filter(status=0).prefetch_related('topics')
+            visible_forums = Forum.objects.filter(status=0).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
             event_classes = ['Forum post']
