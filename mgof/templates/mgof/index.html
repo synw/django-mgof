@@ -21,37 +21,21 @@
 			{% if num_items_in_queue > 0 %}<div class="badge">{{ num_items_in_queue }}</div>{% endif %}
 		</div>
 	{% endif %}
-	<table class="table table-hover gus">
-		<thead>
-  			<tr class="active">
-  				<th style="width:70%">{% trans "Forum" %}</th>
-  				<th style="width:10%" class="text-center">{% trans "Topics" %}</th>
-  				<th style="width:10%" class="text-center">{% trans "Posts" %}</th>
-  				<th style="width:10%" class="text-center">{% trans "Last post" %}</th>
-  			</tr>
-		</thead>
-		<tbody>
-			{% for forum in forums %}
-				<tr>
-					<td style="width:70%">
-						<a href="{% url 'forum-detail' forum_pk=forum.pk %}">
-							<i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}
-						</a>
-					</td>
-					<td style="width:10%;vertical-align:middle" class="text-center">
-						{% if forum.num_topics > 0 %}}{{ forum.num_topics }}{% else %}0{% endif %}
-					</td>
-					<td style="width:10%;vertical-align:middle" class="text-center">
-						{% if forum.num_posts > 0 %}}{{ forum.num_posts }}{% else %}0{% endif %}
-					</td>
-					<td style="width:10%;vertical-align:middle" class="text-center">
-						<small>
-							{% if forum.last_post_date %}{{ forum.last_post_date }}{% endif %} 
-							{% if forum.last_post_username %}{% trans 'by' %} <strong>{{ forum.last_post_username }}</strong>{% endif %}
-						</small>
-					</td>
-				</tr>
-			{% endfor %}
-		</tbody>
-	</table>
+	{% if public_forums %}
+		{% with public_forums as forums %}
+			{% include "mgof/forum/print_forum.html" %}
+		{% endwith %}
+	{% endif %}
+	{% if users_forums %}
+		<h3>{% trans "Users forums" %}</h3>
+		{% with public_users as forums %}
+			{% include "mgof/forum/print_forum.html" %}
+		{% endwith %}
+	{% endif %}
+	{% if groups_forums %}
+		<h3>{% trans "Groups forums" %}</h3>
+		{% with groups_forums as forums %}
+			{% include "mgof/forum/print_forum.html" %}
+		{% endwith %}
+		{% endif %}
 {% endblock %}

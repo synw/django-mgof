@@ -24,20 +24,30 @@ class ForumsView(TemplateView, GroupRequiredMixin):
 
     def get_context_data(self, **kwargs):
         context = super(ForumsView, self).get_context_data(**kwargs)
+        self.public_forums = []
+        self.users_forums = []
+        self.groups_forums = []
         if ENABLE_PRIVATE_FORUMS is True:
             all_forums = Forum.objects.filter(status=0).prefetch_related('topics', 'authorized_groups')
-            visible_forums = []
             for forum in all_forums:
                 if user_can_see_forum(forum, self.request.user) is True:
-                    visible_forums += [forum]
+                    if forum.is_restricted_to_groups is True:
+                        self.groups_forums += [forum]
+                    else:
+                        if forum.is_public is True:
+                            self.public_forums += [forum]
+                        else:
+                            self.users_forums += [forum]
         else:
-            visible_forums = Forum.objects.filter(status=0).prefetch_related('topics')
+            self.public_forums = Forum.objects.filter(status=0).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
             event_classes = ['Forum post']
             model = Post
             context['num_items_in_queue'] = MEvent.objects.count_for_model(model, event_classes)
-        context['forums'] = visible_forums
+        context['public_forums'] = self.public_forums
+        context['users_forums'] = self.users_forums
+        context['groups_forums'] = self.groups_forums
         context['is_moderator'] = is_moderator
         return context
     

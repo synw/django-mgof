@@ -1,0 +1,34 @@
+{% load i18n %}
+<table class="table table-hover gus">
+	<thead>
+		<tr class="active">
+			<th style="width:70%">{% trans "Forum" %}</th>
+			<th style="width:10%" class="text-center">{% trans "Topics" %}</th>
+			<th style="width:10%" class="text-center">{% trans "Posts" %}</th>
+			<th style="width:10%" class="text-center">{% trans "Last post" %}</th>
+		</tr>
+	</thead>
+	<tbody>
+	{% for forum in forums %}
+		<tr>
+			<td style="width:70%">
+				<a href="{% url 'forum-detail' forum_pk=forum.pk %}">
+					<i class="fa fa-comments-o"></i>&nbsp;{{ forum.title }}
+				</a>
+			</td>
+			<td style="width:10%;vertical-align:middle" class="text-center">
+				{% if forum.num_topics > 0 %}}{{ forum.num_topics }}{% else %}0{% endif %}
+			</td>
+			<td style="width:10%;vertical-align:middle" class="text-center">
+				{% if forum.num_posts > 0 %}}{{ forum.num_posts }}{% else %}0{% endif %}
+			</td>
+			<td style="width:10%;vertical-align:middle" class="text-center">
+				<small>
+					{% if forum.last_post_date %}{{ forum.last_post_date }}{% endif %} 
+					{% if forum.last_post_username %}{% trans 'by' %} <strong>{{ forum.last_post_username }}</strong>{% endif %}
+				</small>
+			</td>
+		</tr>
+	{% endfor %}
+	</tbody>
+</table>
