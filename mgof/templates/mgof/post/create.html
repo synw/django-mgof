@@ -11,7 +11,7 @@
 {% block content %}
 <div class="row">
 	<div class="col-xs-12 col-md-offset-1 col-md-10 col-md-offset-1 text-center">
-		<h1><i class="fa fa-commenting-o"></i>&nbsp;{% if not from_topic %}{% trans 'Post response' %}{% else %}{% trans 'Post topic' %}{% endif %}</h1>
+		<h1><i class="fa fa-commenting-o"></i>&nbsp;{% if not from_topic %}{% trans 'Post response' %}{% else %}{% trans 'Text' %}{% endif %}</h1>
 		<div>{% include "mgof/messages_display.html" %}</div>
 		<div>
 			<form action="" method="post">{% csrf_token %}
