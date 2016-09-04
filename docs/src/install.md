@@ -26,6 +26,16 @@ MGOF_MODERATION_GROUPS = ['group1','group2']
 
 Note: the superuser can always moderate.
 
+### Static files
+
+The following static files are required:
+
+- Jquery
+- Bootstrap: for templates
+- [Font-awesome icons](https://fortawesome.github.io/Font-Awesome/icons/): for templates
+
+You have to load these in your main template.
+
 ### Ckeditor configuration
 
 In settings.py:

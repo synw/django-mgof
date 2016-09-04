@@ -16,18 +16,8 @@ This forum wants to be:
 - [django-mbase](https://github.com/synw/django-mbase): basic abstract models
 - [django-mqueue](https://github.com/synw/django-mqueue): events queuing app used for moderation
 
-### Static files required:
 
-- Jquery
-- Bootstrap: for templates
-- [Font-awesome icons](https://fortawesome.github.io/Font-Awesome/icons/): for templates
 
-### Install
 
-- Clone
-- `pip install bleach django-ckeditor django-braces django-mqueue` + clone mbase
-- Add `mgof` to INSTALLED_APPS
-- Add `url('^forum/', include('mgof.urls')),` to urls.py
-- Migrate
 
 
