@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group 
 from ckeditor.fields import RichTextField
 from mbase.models import MetaBaseModel, MetaBaseContentModel, MetaBaseShortTitleModel, MetaBasePostedByModel
-from mgof.conf import PAGINATE_BY
+from mgof.conf import PAGINATE_BY, DEFAULT_MODERATION
 from mqueue.models import MEvent
 
 class Forum(MetaBaseModel, MetaBaseShortTitleModel):
@@ -39,7 +39,7 @@ class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel):
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
     is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
     is_closed = models.BooleanField(default=False, verbose_name=_(u'Topic closed'))
-    is_moderated = models.BooleanField(default=True, verbose_name=_(u'Topic is moderated'))
+    is_moderated = models.BooleanField(default=MODERATION_BY_DEFAULT, verbose_name=_(u'Topic is moderated'))
     
     class Meta:
         verbose_name=_(u'Topic')
