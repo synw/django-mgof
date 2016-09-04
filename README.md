@@ -8,6 +8,12 @@ This forum wants to be:
 - Simple
 - Responsive
 
+### Features:
+
+- Forum permissions: public, authenticated users and group forums.
+- Thread level moderation: each thread can be moderated or not.
+- Phone friendly: responsive ckeditor interface for users to post.
+
 ### Dependencies 
 
 - [bleach](https://github.com/mozilla/bleach): html sanitizing
@@ -16,7 +22,9 @@ This forum wants to be:
 - [django-mbase](https://github.com/synw/django-mbase): basic abstract models
 - [django-mqueue](https://github.com/synw/django-mqueue): events queuing app used for moderation
 
+### Documentation
 
+Check the [documentation](http://django-mgof.readthedocs.io/en/latest/) for install instructions.
 
 
 

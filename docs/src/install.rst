@@ -1,17 +1,23 @@
-# Install
+Install
+=======
 
-### Basic install
+Basic install
+-------------
 
 Install the dependencies: 
 
-   ``` bash
-pip install bleach django-ckeditor django-braces django-mqueue
-git+ https://github.com/synw/django-mbase.git
-   ```
+.. highlight:: bash
+
+::
+
+   pip install bleach django-ckeditor django-braces django-mqueue
+   git+ https://github.com/synw/django-mbase.git
 
 Install the forum:
 
-`pip install git+ https://github.com/synw/django-mgof.git`
+::
+
+   pip install git+ https://github.com/synw/django-mgof.git`
 
 Add ``"mgof",`` to INSTALLED_APPS
 
@@ -19,14 +25,18 @@ Add the urls: ``url('^forum/', include('mgof.urls')),``
 
 Define the moderators groups:
 
-   ```python
-# Default is ['moderators']
-MGOF_MODERATION_GROUPS = ['group1','group2']
-   ```
+.. highlight:: python
+
+::
+
+   python
+   # Default is ['moderators']
+   MGOF_MODERATION_GROUPS = ['group1','group2']
 
 Note: the superuser can always moderate.
 
-### Static files
+Static files
+------------
 
 The following static files are required:
 
@@ -36,14 +46,17 @@ The following static files are required:
 
 You have to load these in your main template.
 
-### Ckeditor configuration
+Ckeditor configuration
+----------------------
 
-In settings.py:
+.. highlight:: python
 
-   ```python
-CKEDITOR_UPLOAD_PATH = 'uploads/'
-CKEDITOR_JQUERY_URL = '/static/js/jquery-2.1.4.min.js'
-CKEDITOR_CONFIGS = {
+::
+
+   python
+   CKEDITOR_UPLOAD_PATH = 'uploads/'
+   CKEDITOR_JQUERY_URL = '/static/js/jquery-2.1.4.min.js'
+   CKEDITOR_CONFIGS = {
     'public': {
         'toolbar':  [
                     ["Bold", "Italic"],
@@ -52,28 +65,33 @@ CKEDITOR_CONFIGS = {
                     ],
         "removePlugins": "stylesheetparser",
     },
-}
+   }
   ```
   
-### Options
+Options
+-------
 
-Set a `LOGIN_URL='/my/login/url/'`: default is `/login/`.
+Set a ``LOGIN_URL='/my/login/url/'``: default is ``/login/``.
 
 Pagination:
 
-   ```python
-# Default is 10
-MGOF_PAGINATE_BY = 15
-# Pagination for the moderation queue: default is 20
-MGOF_MODERATION_PAGINATE_BY = 30
-   ```
+.. highlight:: python
+
+::
+
+   # Default is 10
+   MGOF_PAGINATE_BY = 15
+   # Pagination for the moderation queue: default is 20
+   MGOF_MODERATION_PAGINATE_BY = 30
 
 Moderation: all topics can be set manualy to be moderated or not. All threads are moderated by default. 
 To change this:
 
-   ```python
-# Default is True
-MGOF_DEFAULT_MODERATION = False
-   ```
+.. highlight:: python
+
+::
+
+   # Default is True
+   MGOF_DEFAULT_MODERATION = False
    
 Note: you will have to run the migrations if you change this afterwards.
