@@ -42,7 +42,7 @@ The following static files are required:
 
 - Jquery
 - Bootstrap: for templates
-- [Font-awesome icons](https://fortawesome.github.io/Font-Awesome/icons/): for templates
+- `Font-awesome icons <https://fortawesome.github.io/Font-Awesome/icons/>`_: for templates
 
 You have to load these in your main template.
 
