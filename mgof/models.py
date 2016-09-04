@@ -16,7 +16,7 @@ class Forum(MetaBaseModel, MetaBaseShortTitleModel):
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
     is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
-    is_public = models.BooleanField(default=True, verbose_name=_(u'Opened to anonymous users'))
+    is_public = models.BooleanField(default=True, verbose_name=_(u'Opened to anonymous users'), help_text=_(u'Anonymous users will be able to see this forum'))
     is_restricted_to_groups = models.BooleanField(default=False, verbose_name=_(u'Restricted to groups'), help_text=_(u'You must check this in order to restrict the forum to groups'))
     authorized_groups = models.ManyToManyField(Group, blank=True, verbose_name=_(u'Groups that can access the forum')) 
     
