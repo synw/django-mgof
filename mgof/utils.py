@@ -1,7 +1,6 @@
 # -*- coding: utf-8 -*-
 
 import bleach
-from django.conf import settings
 from mgof.conf import MODERATION_GROUPS
 from mqueue.models import MEvent
 
@@ -41,16 +40,20 @@ def user_can_see_forum(forum, user, superuser_too=True):
     if forum.is_public is True:
         return True
     else:
-        if not user.is_authenticated():
-            return False
-    # check vs forum reserved to groups
-    if forum.is_restricted_to_groups is True:
-        authorized_groups = forum.authorized_groups.all()
-        user_groups = user.groups.all()
-        print str(authorized_groups)+' - '+str(user_groups)
-        for group in user_groups:
-            print str(group)
-            if group in authorized_groups:
+        # check vs forum reserved to groups
+        if forum.is_restricted_to_groups is True:
+            print "* Group"
+            authorized_groups = forum.authorized_groups.all()
+            user_groups = user.groups.all()
+            print str(authorized_groups)+' - '+str(user_groups)
+            for group in user_groups:
+                print str(group)
+                if group in authorized_groups:
+                    return True
+        else:
+            print "* user forum"
+            if user.is_authenticated():
+                print "Is auth"
                 return True
     return False
 

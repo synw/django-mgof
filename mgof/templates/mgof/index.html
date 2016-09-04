@@ -28,7 +28,7 @@
 	{% endif %}
 	{% if users_forums %}
 		<h3>{% trans "Users forums" %}</h3>
-		{% with public_users as forums %}
+		{% with users_forums as forums %}
 			{% include "mgof/forum/print_forum.html" %}
 		{% endwith %}
 	{% endif %}

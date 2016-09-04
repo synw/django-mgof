@@ -1,8 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
 from django import forms
-from django.utils.translation import ugettext_lazy as _
 from django.contrib import admin
 from mgof.models import Forum, Topic, Post
 
@@ -10,24 +8,19 @@ from mgof.models import Forum, Topic, Post
 class ForumForm(forms.ModelForm):
     class Meta:
         model = Forum
-        fields = ['title', 'status', 'is_public', "is_restricted_to_groups", 'authorized_groups']
-        widgets = {'status': forms.RadioSelect}
+        fields = ['title', 'is_active', 'is_public', "is_restricted_to_groups", 'authorized_groups']
         
 
 class TopicForm(forms.ModelForm):
     class Meta:
         model = Topic
-        fields = ['title', 'forum', 'is_moderated', 'is_closed', 'status', 'posted_by']
-        widgets = {
-                   'status': forms.RadioSelect,
-                   }
+        fields = ['title', 'forum', 'is_moderated', 'is_closed', 'is_active', 'posted_by']
        
         
 class PostForm(forms.ModelForm):
     class Meta:
         model = Post
-        fields = ['topic', 'content', 'status', 'posted_by']
-        widgets = {'status': forms.RadioSelect}
+        fields = ['topic', 'content', 'is_active', 'posted_by']
         
 
 @admin.register(Forum)
@@ -35,8 +28,8 @@ class ForumAdmin(admin.ModelAdmin):
     form = ForumForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'num_topics', 'num_posts', 'editor', 'edited', 'created' ]
-    list_display = ['title', 'num_topics', 'num_posts', "is_public", "is_restricted_to_groups", 'status', 'edited']
-    list_filter = ['status']
+    list_display = ['title', 'num_topics', 'num_posts', "is_public", "is_restricted_to_groups", 'is_active', 'edited']
+    list_filter = ['is_active']
     search_fields = ['title', 'editor__username']
     filter_horizontal = ('authorized_groups',)
     
@@ -50,8 +43,8 @@ class TopicAdmin(admin.ModelAdmin):
     form = TopicForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'num_posts', 'num_views', 'editor', 'edited', 'created' ]
-    list_display = ['title', 'forum', 'num_posts', 'num_views', 'status', 'is_moderated', 'is_closed', 'edited']
-    list_filter = ['status']
+    list_display = ['title', 'forum', 'num_posts', 'num_views', 'is_active', 'is_moderated', 'is_closed', 'edited']
+    list_filter = ['is_active']
     search_fields = ['title', 'editor__username']
     
     def save_model(self, request, obj, form, change):
@@ -64,8 +57,8 @@ class PostAdmin(admin.ModelAdmin):
     form = PostForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'editor', 'edited', 'created' ]
-    list_display = ['topic', 'pk', 'posted_by', 'status', 'edited']
-    list_filter = ['status', 'topic__title']
+    list_display = ['topic', 'pk', 'posted_by', 'is_active', 'edited']
+    list_filter = ['is_active', 'topic__title']
     search_fields = ['title', 'editor__username', 'posted_by__username', 'topic__title']
     list_select_related = ['posted_by', 'topic']
     
@@ -73,8 +66,3 @@ class PostAdmin(admin.ModelAdmin):
         obj.editor = request.user
         obj.save()
         super(PostAdmin, self).save_model(request, obj, form, change)
-        
-        
-        
-        
-        

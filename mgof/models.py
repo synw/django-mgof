@@ -6,17 +6,18 @@ from django.db import models
 from django.utils.translation import ugettext_lazy as _
 from django.contrib.auth.models import Group 
 from ckeditor.fields import RichTextField
-from mbase.models import MetaBaseModel, MetaBaseContentModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel
+from mbase.models import MetaBaseModel, MetaBaseContentModel, MetaBaseShortTitleModel, MetaBasePostedByModel
 from mgof.conf import PAGINATE_BY
 from mqueue.models import MEvent
 
-class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel):
+class Forum(MetaBaseModel, MetaBaseShortTitleModel):
     num_topics = models.IntegerField(default=0, verbose_name=_(u'Topics in forum'))
     num_posts = models.IntegerField(default=0, verbose_name=_(u'Posts in forum'))
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
     is_public = models.BooleanField(default=True, verbose_name=_(u'Opened to anonymous users'))
-    is_restricted_to_groups = models.BooleanField(default=False, verbose_name=_(u'Restricted to groups'))
+    is_restricted_to_groups = models.BooleanField(default=False, verbose_name=_(u'Restricted to groups'), help_text=_(u'You must check this in order to restrict the forum to groups'))
     authorized_groups = models.ManyToManyField(Group, blank=True, verbose_name=_(u'Groups that can access the forum')) 
     
     class Meta:
@@ -30,12 +31,13 @@ class Forum(MetaBaseModel, MetaBaseShortTitleModel, MetaBaseStatusModel):
         return reverse('forum-detail', kwargs={'forum_pk':self.pk})
 
 
-class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaBaseStatusModel):
+class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel):
     forum = models.ForeignKey(Forum, related_name="topics", verbose_name = _(u'Forum'))
     num_posts = models.IntegerField(default=0, verbose_name=_(u'Number of posts'))
     num_views = models.IntegerField(default=0, verbose_name=_(u'Number of views'))
     last_post_date = models.DateTimeField(editable=False, null=True, blank=True)
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
     is_closed = models.BooleanField(default=False, verbose_name=_(u'Topic closed'))
     is_moderated = models.BooleanField(default=True, verbose_name=_(u'Topic is moderated'))
     
@@ -50,10 +52,11 @@ class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel, MetaB
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.pk})
         
 
-class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseStatusModel):
+class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel):
     topic = models.ForeignKey(Topic, related_name="posts", verbose_name = _(u'Topic'))
     responded_to_pk = models.PositiveIntegerField(default=0, blank=True) 
     responded_to_username = models.CharField(max_length=120, default='', blank=True)
+    is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
     
     class Meta:
         verbose_name=_(u'Post')
@@ -95,7 +98,7 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
         super(Post, self).delete(*args, **kwargs)
     
     def get_absolute_url(self):
-        posts = Post.objects.filter(topic=self.topic, status=0)
+        posts = Post.objects.filter(topic=self.topic, is_active=True)
         page_num = 1
         if posts:
             paginator = Paginator(posts, PAGINATE_BY)
@@ -103,19 +106,9 @@ class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel, MetaBaseS
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.topic.pk})+'?page='+str(page_num)+'#'+str(self.pk)
          
     def get_event_object_url(self):
-        posts = Post.objects.filter(topic=self.topic, status=0)
+        posts = Post.objects.filter(topic=self.topic, is_active=True)
         page_num = 1
         if posts:
             paginator = Paginator(posts, PAGINATE_BY)
             page_num = paginator.num_pages
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.topic.pk})+'?page='+str(page_num)+'&m=1&p='+str(self.pk)+'#'+str(self.pk)
-        
-
-
-
-
-
-
-
-
-

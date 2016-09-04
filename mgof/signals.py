@@ -1,6 +1,5 @@
 # -*- coding: utf-8 -*-
 
-from django.conf import settings
 from django.db.models.signals import post_save
 from mqueue.models import MEvent
 from mgof.models import Post

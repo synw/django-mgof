@@ -28,7 +28,7 @@ class ForumsView(TemplateView, GroupRequiredMixin):
         self.users_forums = []
         self.groups_forums = []
         if ENABLE_PRIVATE_FORUMS is True:
-            all_forums = Forum.objects.filter(status=0).prefetch_related('topics', 'authorized_groups')
+            all_forums = Forum.objects.filter(is_active=True).prefetch_related('topics', 'authorized_groups')
             for forum in all_forums:
                 if user_can_see_forum(forum, self.request.user) is True:
                     if forum.is_restricted_to_groups is True:
@@ -39,7 +39,7 @@ class ForumsView(TemplateView, GroupRequiredMixin):
                         else:
                             self.users_forums += [forum]
         else:
-            self.public_forums = Forum.objects.filter(status=0).prefetch_related('topics')
+            self.public_forums = Forum.objects.filter(is_active=True).prefetch_related('topics')
         is_moderator = user_is_moderator(self.request.user)
         if is_moderator:
             event_classes = ['Forum post']
@@ -59,7 +59,7 @@ class ForumView(ListView):
     
     def dispatch(self, request, *args, **kwargs):
         if ENABLE_PRIVATE_FORUMS:
-            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), status=0, pk=self.kwargs['forum_pk'])
+            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), is_active=True, pk=self.kwargs['forum_pk'])
             user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
             if not user_can_see_forum_:
                 MEvent.objects.create(
@@ -71,11 +71,11 @@ class ForumView(ListView):
                                       )
                 raise Http404
         else:
-            self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
+            self.forum = get_object_or_404(Forum, is_active=True, pk=self.kwargs['forum_pk'])
         return super(ForumView, self).dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
-        topics = Topic.objects.filter(status=0, forum=self.forum).order_by('-edited')
+        topics = Topic.objects.filter(is_active=True, forum=self.forum).order_by('-edited')
         return topics
     
     def get_context_data(self, **kwargs):
@@ -92,7 +92,7 @@ class TopicView(ListView, GroupRequiredMixin):
     
     def dispatch(self, request, *args, **kwargs):
         if ENABLE_PRIVATE_FORUMS:
-            self.topic = get_object_or_404(Topic.objects.prefetch_related('forum__authorized_groups'), status=0, pk=self.kwargs['topic_pk'])
+            self.topic = get_object_or_404(Topic.objects.prefetch_related('forum__authorized_groups'), is_active=True, pk=self.kwargs['topic_pk'])
             self.forum = self.topic.forum
             user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
             if not user_can_see_forum_:
@@ -105,12 +105,12 @@ class TopicView(ListView, GroupRequiredMixin):
                                       )
                 raise Http404
         else:
-            self.topic = get_object_or_404(Topic.objects.select_related('forum'), status=0, pk=self.kwargs['topic_pk'])
+            self.topic = get_object_or_404(Topic.objects.select_related('forum'), is_active=True, pk=self.kwargs['topic_pk'])
             self.forum = self.topic.forum
         return super(TopicView, self).dispatch(request, *args, **kwargs)
     
     def get_queryset(self):
-        qs = Post.objects.filter(topic=self.topic, status=0).select_related('editor')
+        qs = Post.objects.filter(topic=self.topic, is_active=True).select_related('editor')
         #~ record view if not comes from a pagination link
         if 'v' not in self.request.GET.keys():
             self.topic.num_views = self.topic.num_views+1
@@ -140,7 +140,7 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
     
     def dispatch(self, request, *args, **kwargs):
         if ENABLE_PRIVATE_FORUMS:
-            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), status=0, pk=self.kwargs['forum_pk'])
+            self.forum = get_object_or_404(Forum.objects.prefetch_related('authorized_groups'), is_active=True, pk=self.kwargs['forum_pk'])
             user_can_see_forum_ = user_can_see_forum(self.forum, request.user)
             if not user_can_see_forum_:
                 MEvent.objects.create(
@@ -152,7 +152,7 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
                                       )
                 raise Http404
         else:
-            self.forum = get_object_or_404(Forum, status=0, pk=self.kwargs['forum_pk'])
+            self.forum = get_object_or_404(Forum, is_active=True, pk=self.kwargs['forum_pk'])
         return super(AddTopicView, self).dispatch(request, *args, **kwargs)
     
     def form_valid(self, form, **kwargs):
@@ -162,7 +162,7 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
             obj.forum = self.forum
             obj.monitoring_level = MODERATION_LEVEL
             # set status to orphaned until a first post is related to the topic
-            obj.status = 3
+            #obj.is_active = False
         else: 
             raise Http404
         self.topic = obj
@@ -218,7 +218,7 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
             topic = self.topic
             post_pk = self.kwargs['post_pk']
             #~ get posts for topic
-            self.posts = Post.objects.filter(topic=self.topic, status=0)
+            self.posts = Post.objects.filter(topic=self.topic, is_active=True)
             #~ get related post information
             try:
                 post_responded_to = self.posts.filter(pk=post_pk)[0]
@@ -235,12 +235,12 @@ class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
             obj.responded_to_username = post_responded_to_username
             obj.topic = topic
             obj.content = clean_post_data(obj.content)
-            obj.status = 0
+            obj.is_active = True
             #~ counts for topic
             topic.num_posts = topic.num_posts+1
             topic.last_post_date = timezone.now()
             topic.last_post_username = self.request.user.username
-            topic.status = 0
+            #topic.status = 0
             topic.save()
             #~ counts for forum
             forum = topic.forum
