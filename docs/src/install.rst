@@ -21,7 +21,23 @@ Install the forum:
 
 Add ``"mgof",`` to INSTALLED_APPS
 
-Add the urls: ``url('^forum/', include('mgof.urls')),``
+Installed apps:
+
+.. highlight:: python
+
+::
+
+   "ckeditor",
+   "ckeditor_uploader",
+   "mqueue",
+   "mgof",
+
+Urls:
+
+::
+
+   url(r'^ckeditor/', include('ckeditor_uploader.urls')),
+   url('^forum/', include('mgof.urls')),
 
 Define the moderators groups:
 
