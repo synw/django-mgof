@@ -16,7 +16,7 @@ from mqueue.models import MEvent
 from mgof.models import Forum, Topic, Post
 from mgof.forms import PostForm
 from mgof.utils import clean_post_data, user_is_moderator, user_can_see_forum
-from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_LEVEL, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
+from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
 
 
 class ForumsView(TemplateView, GroupRequiredMixin):
@@ -160,7 +160,6 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
             obj = form.save(commit=False)
             obj.title = form.cleaned_data['title']
             obj.forum = self.forum
-            obj.monitoring_level = MODERATION_LEVEL
             # set status to orphaned until a first post is related to the topic
             #obj.is_active = False
         else: 
@@ -305,15 +304,11 @@ def set_topic_monitoring_level(request, topic_pk, monitoring_level):
         is_moderator = user_is_moderator(request.user)
         if not is_moderator:
             raise Http404     
-        try:
-            topic = Topic.objects.get(pk=topic_pk)
-            if monitoring_level == 0:
-                topic.is_moderated = False
-            if monitoring_level == 1:
-                topic.is_moderated = True
-            topic.save()
-        except:
-            pass
+        topic = Topic.objects.get(pk=topic_pk)
+        topic.is_moderated = True
+        if int(monitoring_level) == 0:
+            topic.is_moderated = False
+        topic.save()
         return render_to_response('mgof/topic/set_monitoring.html',
                                     {'monitoring_level': monitoring_level, 'topic': topic},
                                     content_type="application/xhtml+xml"
