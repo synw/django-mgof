@@ -1,26 +1,8 @@
 # -*- coding: utf-8 -*-
 
-from django import forms
 from django.contrib import admin
 from mgof.models import Forum, Topic, Post
-
-
-class ForumForm(forms.ModelForm):
-    class Meta:
-        model = Forum
-        fields = ['title', 'is_active', 'is_public', "is_restricted_to_groups", 'authorized_groups']
-        
-
-class TopicForm(forms.ModelForm):
-    class Meta:
-        model = Topic
-        fields = ['title', 'forum', 'is_moderated', 'is_closed', 'is_active', 'posted_by']
-       
-        
-class PostForm(forms.ModelForm):
-    class Meta:
-        model = Post
-        fields = ['topic', 'content', 'is_active', 'posted_by']
+from mgof.forms import ForumForm, TopicForm, PostForm
         
 
 @admin.register(Forum)
@@ -28,7 +10,7 @@ class ForumAdmin(admin.ModelAdmin):
     form = ForumForm
     date_hierarchy = 'edited'
     readonly_fields = [ 'num_topics', 'num_posts', 'editor', 'edited', 'created' ]
-    list_display = ['title', 'num_topics', 'num_posts', "is_public", "is_restricted_to_groups", 'is_active', 'edited']
+    list_display = ['title', 'num_topics', 'num_posts', "is_public", "is_restricted_to_groups", 'is_active', 'is_moderated', 'edited']
     list_filter = ['is_active']
     search_fields = ['title', 'editor__username']
     filter_horizontal = ('authorized_groups',)

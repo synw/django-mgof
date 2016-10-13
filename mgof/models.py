@@ -16,6 +16,7 @@ class Forum(MetaBaseModel, MetaBaseShortTitleModel):
     last_post_username = models.CharField(max_length=120, editable=False, blank=True)
     is_active = models.BooleanField(default=True, verbose_name=_(u'Is Active'))
     is_public = models.BooleanField(default=True, verbose_name=_(u'Opened to anonymous users'), help_text=_(u'Anonymous users will be able to see this forum'))
+    is_moderated = models.BooleanField(default=DEFAULT_MODERATION, verbose_name=_(u'Is moderated'))
     is_restricted_to_groups = models.BooleanField(default=False, verbose_name=_(u'Restricted to groups'), help_text=_(u'You must check this in order to restrict the forum to groups'))
     authorized_groups = models.ManyToManyField(Group, blank=True, verbose_name=_(u'Groups that can access the forum')) 
     
@@ -49,6 +50,10 @@ class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel):
     
     def get_absolute_url(self):
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.pk})
+    
+    def save(self, *args, **kwargs):
+        self.is_moderated = self.forum.is_moderated
+        return super(Topic, self).save(*args, **kwargs)
         
 
 class Post(MetaBaseModel, MetaBasePostedByModel, MetaBaseContentModel):

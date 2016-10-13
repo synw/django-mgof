@@ -14,7 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 from braces.views import LoginRequiredMixin, MessageMixin, GroupRequiredMixin
 from mqueue.models import MEvent
 from mgof.models import Forum, Topic, Post
-from mgof.forms import PostForm
+from mgof.forms import PublicPostForm
 from mgof.utils import clean_post_data, user_is_moderator, user_can_see_forum
 from mgof.conf import LOGIN_URL, PAGINATE_BY, MODERATION_PAGINATE_BY, ENABLE_PRIVATE_FORUMS
 
@@ -176,7 +176,7 @@ class AddTopicView(LoginRequiredMixin, MessageMixin, CreateView):
 
 class AddPostView(LoginRequiredMixin, MessageMixin, CreateView):
     model = Post
-    form_class = PostForm
+    form_class = PublicPostForm
     template_name = 'mgof/post/create.html'
     login_url = LOGIN_URL+'?from=/forum/'
     
