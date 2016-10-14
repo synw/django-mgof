@@ -10,16 +10,7 @@ Install the dependencies:
 
 ::
 
-   pip install bleach django-ckeditor django-braces django-mqueue
-   git+ https://github.com/synw/django-mbase.git
-
-Install the forum:
-
-::
-
-   pip install git+ https://github.com/synw/django-mgof.git`
-
-Add ``"mgof",`` to INSTALLED_APPS
+   pip install django-mgof
 
 Installed apps:
 
@@ -29,6 +20,7 @@ Installed apps:
 
    "ckeditor",
    "ckeditor_uploader",
+   "mbase",
    "mqueue",
    "mgof",
 
@@ -39,7 +31,7 @@ Urls:
    url(r'^ckeditor/', include('ckeditor_uploader.urls')),
    url('^forum/', include('mgof.urls')),
 
-Define the moderators groups:
+Optional : define the moderators groups:
 
 .. highlight:: python
 

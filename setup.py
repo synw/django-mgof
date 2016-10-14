@@ -23,9 +23,10 @@ setup(
     ],
   zip_safe=False,
   install_requires=[
-        'django-braces',
         'bleach',
+        'django-braces',
         'django-ckeditor',
+        'django-mbase',
         'django-mqueue',
     ],
 )
