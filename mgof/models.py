@@ -52,7 +52,8 @@ class Topic(MetaBaseModel, MetaBaseShortTitleModel, MetaBasePostedByModel):
         return reverse('forum-topic-detail', kwargs={'topic_pk':self.pk})
     
     def save(self, *args, **kwargs):
-        self.is_moderated = self.forum.is_moderated
+        if not self.pk:
+            self.is_moderated = self.forum.is_moderated
         return super(Topic, self).save(*args, **kwargs)
         
 
