@@ -1,0 +1,6 @@
+recursive-include mgof/templatetags *
+recursive-include mgof/static *
+recursive-include mgof/templates *
+recursive-include mgof/migrations *
+recursive-include mgof/locale *
+recursive-include mgof/tests *
